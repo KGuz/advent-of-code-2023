@@ -1,8 +1,8 @@
 package main
 
 import (
+	"aoc23/assets"
 	"aoc23/internal/puzzle"
-	"aoc23/internal/utl"
 	"flag"
 	"fmt"
 	"strings"
@@ -18,7 +18,7 @@ func main() {
 		return
 	}
 
-	input, err := utl.Load(*day, false)
+	input, err := assets.LoadInput(*day)
 	if err != nil {
 		fmt.Println(err)
 		return

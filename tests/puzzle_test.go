@@ -1,15 +1,15 @@
 package puzzle_test
 
 import (
+	"aoc23/assets"
 	"aoc23/internal/puzzle"
-	"aoc23/internal/utl"
 	"fmt"
 	"testing"
 )
 
 func solve(day int, part int) string {
 	p, _ := puzzle.Dispatch(day)
-	input, _ := utl.Load(day, true)
+	input, _ := assets.LoadExample(day)
 
 	if part == 1 {
 		return p.PartOne(input)
