@@ -23,8 +23,8 @@ func TestPuzzles(t *testing.T) {
 		part   int
 		answer string
 	}{
-		{1, 1, ""},
-		{1, 2, ""},
+		{1, 1, "24000"},
+		{1, 2, "45000"},
 	}
 
 	for _, tt := range tests {
