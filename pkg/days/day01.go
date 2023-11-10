@@ -1,7 +1,7 @@
 package days
 
 import (
-	"aoc23/internal/utl"
+	"aoc23/pkg/utl"
 	"fmt"
 	"sort"
 )
