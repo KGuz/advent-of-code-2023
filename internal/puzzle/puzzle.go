@@ -1,7 +1,7 @@
 package puzzle
 
 import (
-	"aoc23/pkg/days"
+	"aoc/pkg/days"
 	"errors"
 )
 

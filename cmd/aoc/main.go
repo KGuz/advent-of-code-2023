@@ -1,8 +1,8 @@
 package main
 
 import (
-	"aoc23/assets"
-	"aoc23/internal/puzzle"
+	"aoc/assets"
+	"aoc/internal/puzzle"
 	"flag"
 	"fmt"
 	"strings"
@@ -25,7 +25,7 @@ func main() {
 	}
 
 	pad := strings.Repeat("*", 14)
-	fmt.Printf("%s Advent of Code 2021 - Day %02d %s*\n", pad, *day, pad)
+	fmt.Printf("%s Advent of Code 2023 - Day %02d %s*\n", pad, *day, pad)
 	fmt.Printf("Part one: %49s\n", puzzle.PartOne(input))
 	fmt.Printf("Part two: %49s\n", puzzle.PartTwo(input))
 }

@@ -1,8 +1,8 @@
 package days_test
 
 import (
-	"aoc23/assets"
-	"aoc23/internal/puzzle"
+	"aoc/assets"
+	"aoc/internal/puzzle"
 	"fmt"
 	"testing"
 )
