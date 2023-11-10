@@ -1,4 +1,4 @@
-package days_test
+package advent_test
 
 import (
 	"aoc/assets"

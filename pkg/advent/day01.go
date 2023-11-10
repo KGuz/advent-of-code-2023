@@ -1,4 +1,4 @@
-package days
+package advent
 
 import (
 	"aoc/pkg/utl"

@@ -1,4 +1,4 @@
-package days
+package advent
 
 type Day13 struct{}
 
