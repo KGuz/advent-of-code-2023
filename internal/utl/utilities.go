@@ -1,6 +1,7 @@
 package utl
 
 import (
+	"bufio"
 	"strconv"
 	"strings"
 )
@@ -10,7 +11,12 @@ type Number interface {
 }
 
 func Lines(s string) []string {
-	return strings.Split(strings.TrimRight(s, "\n"), "\n")
+	var lines []string
+	sc := bufio.NewScanner(strings.NewReader(s))
+	for sc.Scan() {
+		lines = append(lines, sc.Text())
+	}
+	return lines
 }
 
 func Parse(s string) int {
