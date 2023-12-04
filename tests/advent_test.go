@@ -41,14 +41,20 @@ func test(day int, part int, want string) error {
 	return nil
 }
 
-func TestAllPuzzles(t *testing.T) {
+func TestPuzzles(t *testing.T) {
 	var tests = []struct {
 		day  int
 		part int
 		want string
 	}{
-		{1, 1, "24000"},
-		{1, 2, "45000"},
+		{1, 1, "231"},
+		{1, 2, "281"},
+		{2, 1, "8"},
+		{2, 2, "2286"},
+		{3, 1, "4361"},
+		{3, 2, "467835"},
+		{4, 1, "13"},
+		{4, 2, "30"},
 	}
 
 	for _, tt := range tests {
@@ -57,13 +63,5 @@ func TestAllPuzzles(t *testing.T) {
 				t.Error(err)
 			}
 		})
-	}
-}
-
-func TestSinglePuzzle(t *testing.T) {
-	day, part, want := 1, 1, "24000"
-
-	if err := test(day, part, want); err != nil {
-		t.Error(err)
 	}
 }

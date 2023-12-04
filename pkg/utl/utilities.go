@@ -2,6 +2,7 @@ package utl
 
 import (
 	"bufio"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -27,17 +28,41 @@ func Parse(s string) int {
 	return n
 }
 
-func Last[T any](arr []T) T {
-	if len(arr) == 0 {
-		panic("this bad boy can fit so many values in it")
-	}
-	return arr[len(arr)-1]
-}
-
 func Sum[T Number](arr []T) T {
 	sum := T(0)
 	for _, val := range arr {
 		sum += val
 	}
 	return sum
+}
+
+func Captures(re *regexp.Regexp, str string) []string {
+	captures := make([]string, 0)
+
+	matches := re.FindAllStringSubmatch(str, -1)
+
+	for _, match := range matches {
+		for _, group := range match {
+			if group != "" {
+				captures = append(captures, group)
+			}
+		}
+	}
+	return captures
+}
+
+func CapturesNamed(re *regexp.Regexp, str string) map[string]string {
+	captures := make(map[string]string)
+
+	matches := re.FindAllStringSubmatch(str, -1)
+	names := re.SubexpNames()
+
+	for _, match := range matches {
+		for n, group := range match {
+			if names[n] != "" && group != "" {
+				captures[names[n]] = group
+			}
+		}
+	}
+	return captures
 }

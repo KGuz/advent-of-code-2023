@@ -10,6 +10,7 @@ import (
 
 func main() {
 	day := flag.Int("day", 1, "Advent day number [1-25]")
+	example := flag.Bool("example", false, "Solves puzzle using example input")
 	flag.Parse()
 
 	puzzle, err := puzzle.Dispatch(*day)
@@ -18,7 +19,7 @@ func main() {
 		return
 	}
 
-	input, err := assets.LoadInput(*day)
+	input, err := assets.Load(*day, *example)
 	if err != nil {
 		fmt.Println(err)
 		return

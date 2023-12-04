@@ -2,86 +2,115 @@ package advent
 
 import (
 	"aoc/pkg/utl"
-	"fmt"
+	"regexp"
 	"sort"
+	"strconv"
 )
 
-// Example from Advent Of Code 2022
 type Day01 struct {
-	/* --- Calorie Counting ---
-	Santa's reindeer typically eat regular reindeer food, but they need a lot
-	of magical energy to deliver presents on Christmas. For that, their
-	favorite snack is a special type of star fruit that only grows deep in the
-	jungle. The Elves have brought you on their annual expedition to the grove
-	where the fruit grows.
+	/*--- Day 1: Trebuchet?! ---
 
-	To supply enough magical energy, the expedition needs to retrieve a minimum
-	of fifty stars by December 25th. Although the Elves assure you that the
-	grove has plenty of fruit, you decide to grab any fruit you see along the
-	way, just in case.
+	Something is wrong with global snow production, and you've been selected to
+	take a look. The Elves have even given you a map; on it, they've used stars
+	to mark the top fifty locations that are likely to be having problems.
+
+	You've been doing this long enough to know that to restore snow operations,
+	you need to check all fifty stars by December 25th.
 
 	Collect stars by solving puzzles. Two puzzles will be made available on
 	each day in the Advent calendar; the second puzzle is unlocked when you
 	complete the first. Each puzzle grants one star. Good luck!
 
-	The jungle must be too overgrown and difficult to navigate in vehicles or
-	access from the air; the Elves' expedition traditionally goes on foot. As
-	your boats approach land, the Elves begin taking inventory of their
-	supplies. One important consideration is food - in particular, the number
-	of Calories each Elf is carrying (your puzzle input).
+	You try to ask why they can't just use a weather machine ("not powerful
+	enough") and where they're even sending you ("the sky") and why your map
+	looks mostly blank ("you sure ask a lot of questions") and hang on did you
+	just say the sky ("of course, where do you think snow comes from") when you
+	realize that the Elves are already loading you into a trebuchet ("please
+	hold still, we need to strap you in").
 
-	The Elves take turns writing down the number of Calories contained by the
-	various meals, snacks, rations, etc. that they've brought with them, one
-	item per line. Each Elf separates their own inventory from the previous
-	Elf's inventory (if any) by a blank line.
+	As they're making the final adjustments, they discover that their
+	calibration document (your puzzle input) has been amended by a very young
+	Elf who was apparently just excited to show off her art skills.
+	Consequently, the Elves are having trouble reading the values on the
+	document.
 
-	In case the Elves get hungry and need extra snacks, they need to know which
-	Elf to ask: they'd like to know how many Calories are being carried by the
-	Elf carrying the most Calories. In the example above, this is 24000
-	(carried by the fourth Elf).
+	The newly-improved calibration document consists of lines of text; each
+	line originally contained a specific calibration value that the Elves now
+	need to recover. On each line, the calibration value can be found by
+	combining the first digit and the last digit (in that order) to form a
+	single two-digit number.
 
-	Find the Elf carrying the most Calories. How many total Calories is that
-	Elf carrying?
+	For example:
 
-	--- Part Two ---
-	By the time you calculate the answer to the Elves' question, they've
-	already realized that the Elf carrying the most Calories of food might
-	eventually run out of snacks.
+	1abc2
+	pqr3stu8vwx
+	a1b2c3d4e5f
+	treb7uchet
 
-	To avoid this unacceptable situation, the Elves would instead like to know
-	the total Calories carried by the top three Elves carrying the most
-	Calories. That way, even if one of those Elves runs out of snacks, they
-	still have two backups.
+	In this example, the calibration values of these four lines are 12, 38, 15,
+	and 77. Adding these together produces 142.
 
-	Find the top three Elves carrying the most Calories. How many Calories are
-	those Elves carrying in total?
-	*/
+	Consider your entire calibration document. What is the sum of all of the
+	calibration values? */
+
+	/* --- Part Two ---
+
+	Your calculation isn't quite right. It looks like some of the digits are
+	actually spelled out with letters: one, two, three, four, five, six, seven,
+	eight, and nine also count as valid "digits".
+
+	Equipped with this new information, you now need to find the real first and
+	last digit on each line. For example:
+
+	two1nine
+	eightwothree
+	abcone2threexyz
+	xtwone3four
+	4nineeightseven2
+	zoneight234
+	7pqrstsixteen
+
+	In this example, the calibration values are 29, 83, 13, 24, 42, 14, and 76.
+	Adding these together produces 281.
+
+	What is the sum of all of the calibration values? */
 }
 
 func (Day01) PartOne(input string) string {
-	calories := countCalories(input)
-	sort.Ints(calories)
-	return fmt.Sprintf("%d", utl.Last(calories))
+	re := regexp.MustCompile(`\d`)
+	sum := 0
+
+	for _, str := range utl.Lines(input) {
+		captures := utl.Captures(re, str)
+		sum += 10*utl.Parse(captures[0]) + utl.Parse(captures[len(captures)-1])
+	}
+
+	return strconv.Itoa(sum)
 }
 
 func (Day01) PartTwo(input string) string {
-	calories := countCalories(input)
-	sort.Ints(calories)
-	return fmt.Sprintf("%d", utl.Sum(calories[len(calories)-3:]))
-}
+	patterns := [9]string{"1|one", "2|two", "3|three", "4|four", "5|five", "6|six", "7|seven", "8|eight", "9|nine"}
+	sum := 0
 
-func countCalories(s string) []int {
-	calories := make([]int, 0)
-	current := 0
+	for _, str := range utl.Lines(input) {
+		occurances := make([][2]int, 0)
 
-	for _, line := range utl.Lines(s) {
-		if len(line) == 0 {
-			calories = append(calories, current)
-			current = 0
-		} else {
-			current += utl.Parse(line)
+		for n, pattern := range patterns {
+			re := regexp.MustCompile(pattern)
+			matches := re.FindAllStringIndex(str, -1)
+
+			for _, pos := range matches {
+				occurances = append(occurances, [2]int{pos[0], n + 1})
+			}
 		}
+
+		sort.Slice(occurances, func(i, j int) bool {
+			return occurances[i][0] < occurances[j][0]
+		})
+
+		first, last := occurances[0][1], occurances[len(occurances)-1][1]
+		sum += 10*first + last
 	}
-	calories = append(calories, current)
-	return calories
+
+	return strconv.Itoa(sum)
 }
