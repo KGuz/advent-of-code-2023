@@ -28,6 +28,13 @@ func Parse(s string) int {
 	return n
 }
 
+func Last[T any](arr []T) T {
+	if len(arr) == 0 {
+		panic("this bad boy can fit so many values in it")
+	}
+	return arr[len(arr)-1]
+}
+
 func Sum[T Number](arr []T) T {
 	sum := T(0)
 	for _, val := range arr {
@@ -65,4 +72,18 @@ func CapturesNamed(re *regexp.Regexp, str string) map[string]string {
 		}
 	}
 	return captures
+}
+
+func Map[T any, U any](arr []T, fn func(T) U) []U {
+	res := make([]U, 0, len(arr))
+	for _, val := range arr {
+		res = append(res, fn(val))
+	}
+	return res
+}
+
+func Copy[T any](arr []T) []T {
+	res := make([]T, len(arr))
+	copy(res, arr)
+	return res
 }
