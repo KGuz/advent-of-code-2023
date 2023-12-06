@@ -81,9 +81,3 @@ func Map[T any, U any](arr []T, fn func(T) U) []U {
 	}
 	return res
 }
-
-func Copy[T any](arr []T) []T {
-	res := make([]T, len(arr))
-	copy(res, arr)
-	return res
-}

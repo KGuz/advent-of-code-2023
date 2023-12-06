@@ -189,7 +189,7 @@ func (d Day05) PartOne(input string) string {
 	seeds, maps := d.parse(input)
 
 	for _, ranges := range maps {
-		next := utl.Copy(seeds)
+		next := slices.Clone(seeds)
 
 		for n, seed := range seeds {
 			for _, rmap := range ranges {
@@ -217,7 +217,7 @@ func (d Day05) PartTwo(input string) string {
 	}
 
 	for _, ranges := range maps {
-		next := utl.Copy(seeds)
+		next := slices.Clone(seeds)
 
 		for n, seed := range seeds {
 			for _, rmap := range ranges {
