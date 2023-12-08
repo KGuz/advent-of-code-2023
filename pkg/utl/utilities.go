@@ -8,39 +8,28 @@ import (
 )
 
 type Number interface {
-	int | uint | int8 | uint8 | int16 | uint16 | int32 | uint32 | int64 | uint64 | float32 | float64
+	Integer | float32 | float64
 }
 
-func Lines(s string) []string {
+type Integer interface {
+	int | uint | int8 | uint8 | int16 | uint16 | int32 | uint32 | int64 | uint64
+}
+
+func Lines(str string) []string {
 	var lines []string
-	sc := bufio.NewScanner(strings.NewReader(s))
+	sc := bufio.NewScanner(strings.NewReader(str))
 	for sc.Scan() {
 		lines = append(lines, sc.Text())
 	}
 	return lines
 }
 
-func Parse(s string) int {
-	n, err := strconv.Atoi(s)
+func Parse(str string) int {
+	n, err := strconv.Atoi(str)
 	if err != nil {
 		panic("you can't handle the truth!")
 	}
 	return n
-}
-
-func Last[T any](arr []T) T {
-	if len(arr) == 0 {
-		panic("this bad boy can fit so many values in it")
-	}
-	return arr[len(arr)-1]
-}
-
-func Sum[T Number](arr []T) T {
-	sum := T(0)
-	for _, val := range arr {
-		sum += val
-	}
-	return sum
 }
 
 func Captures(re *regexp.Regexp, str string) []string {
@@ -74,10 +63,72 @@ func CapturesNamed(re *regexp.Regexp, str string) map[string]string {
 	return captures
 }
 
-func Map[T any, U any](arr []T, fn func(T) U) []U {
-	res := make([]U, 0, len(arr))
-	for _, val := range arr {
+func Last[T any](slice []T) T {
+	if len(slice) == 0 {
+		panic("this bad boy can fit so many values in it")
+	}
+	return slice[len(slice)-1]
+}
+
+func Sum[T Number](slice []T) T {
+	sum := T(0)
+	for _, val := range slice {
+		sum += val
+	}
+	return sum
+}
+
+func Map[T any, U any](slice []T, fn func(T) U) []U {
+	res := make([]U, 0, len(slice))
+	for _, val := range slice {
 		res = append(res, fn(val))
 	}
 	return res
+}
+
+func Filter[T any](slice []T, fn func(T) bool) []T {
+	res := make([]T, 0)
+	for _, val := range slice {
+		if fn(val) {
+			res = append(res, val)
+		}
+	}
+	return res
+}
+
+func Keys[K interface{ comparable }, V any](m map[K]V) []K {
+	keys := make([]K, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
+func Values[K interface{ comparable }, V any](m map[K]V) []V {
+	values := make([]V, 0, len(m))
+	for _, v := range m {
+		values = append(values, v)
+	}
+	return values
+}
+
+// Greatest common divisor (GCD) via Euclidean algorithm
+func GCD[T Integer](a, b T) T {
+	for b != 0 {
+		t := b
+		b = a % b
+		a = t
+	}
+	return a
+}
+
+// Least Common Multiple (LCM) via GCD
+func LCM[T Integer](a, b T, integers ...T) T {
+	result := a * b / GCD(a, b)
+
+	for i := 0; i < len(integers); i++ {
+		result = LCM(result, integers[i])
+	}
+
+	return result
 }

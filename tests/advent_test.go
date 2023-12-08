@@ -61,6 +61,8 @@ func TestPuzzles(t *testing.T) {
 		{6, 2, "71503"},
 		{7, 1, "6440"},
 		{7, 2, "5905"},
+		{8, 1, "2"},
+		{8, 2, "6"},
 	}
 
 	for _, tt := range tests {
