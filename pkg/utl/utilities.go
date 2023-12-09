@@ -132,3 +132,21 @@ func LCM[T Integer](a, b T, integers ...T) T {
 
 	return result
 }
+
+func All[T any](slice []T, fn func(T) bool) bool {
+	for _, val := range slice {
+		if !fn(val) {
+			return false
+		}
+	}
+	return true
+}
+
+func Any[T any](slice []T, fn func(T) bool) bool {
+	for _, val := range slice {
+		if fn(val) {
+			return true
+		}
+	}
+	return false
+}
