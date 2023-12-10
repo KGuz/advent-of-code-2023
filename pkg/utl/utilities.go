@@ -150,3 +150,43 @@ func Any[T any](slice []T, fn func(T) bool) bool {
 	}
 	return false
 }
+
+func FloodFill(graph [][]byte, si, sj int, fn func(i, j int) bool) map[[2]int]bool {
+	directions := [4][2]int{{0, 1}, {0, -1}, {1, 0}, {-1, 0}}
+
+	visited := make(map[[2]int]bool)
+	queue := [][2]int{{si, sj}}
+
+	for len(queue) != 0 {
+		node := queue[0]
+		queue = queue[1:]
+
+		if _, ok := visited[node]; ok {
+			continue
+		}
+
+		visited[node] = true
+		for _, dir := range directions {
+			next := [2]int{node[0] + dir[0], node[1] + dir[1]}
+
+			inbounds := 0 <= next[0] && next[0] < len(graph) && 0 <= next[1] && next[1] < len(graph[next[0]])
+			if inbounds && fn(next[0], next[1]) {
+				queue = append(queue, next)
+			}
+		}
+	}
+
+	return visited
+}
+
+const (
+	CYAN      = "\033[96m"
+	PURPLE    = "\033[95m"
+	BLUE      = "\033[94m"
+	YELLOW    = "\033[93m"
+	GREEN     = "\033[92m"
+	RED       = "\033[91m"
+	BOLD      = "\033[1m"
+	UNDERLINE = "\033[4m"
+	END       = "\033[0m"
+)
