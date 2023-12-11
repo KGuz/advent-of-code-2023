@@ -146,17 +146,17 @@ type Day11 struct {
 }
 
 func (d Day11) PartOne(input string) string {
-	skymap := d.parse(input)
-	galaxies := d.expand(skymap, 2)
-	distance := d.distance(galaxies)
-	return strconv.Itoa(distance)
+	return strconv.Itoa(d.cosmicExpansion(input, 2))
 }
 
 func (d Day11) PartTwo(input string) string {
+	return strconv.Itoa(d.cosmicExpansion(input, 1000000))
+}
+
+func (d Day11) cosmicExpansion(input string, coefficient int) int {
 	skymap := d.parse(input)
-	galaxies := d.expand(skymap, 1000000)
-	distance := d.distance(galaxies)
-	return strconv.Itoa(distance)
+	galaxies := d.expand(skymap, coefficient)
+	return d.distance(galaxies)
 }
 
 func (Day11) parse(input string) [][]byte {
@@ -168,8 +168,7 @@ func (Day11) parse(input string) [][]byte {
 func (Day11) expand(skymap [][]byte, coefficient int) []pair {
 	galaxyMap := make(map[pair]pair)
 
-	ei := 0
-	for i := 0; i < len(skymap); i++ {
+	for i, ei := 0, 0; i < len(skymap); i, ei = i+1, ei+1 {
 		empty := true
 		for j := 0; j < len(skymap[i]); j++ {
 			if skymap[i][j] == '#' {
@@ -180,11 +179,9 @@ func (Day11) expand(skymap [][]byte, coefficient int) []pair {
 		if empty {
 			ei += coefficient - 1
 		}
-		ei++
 	}
 
-	ej := 0
-	for j := 0; j < len(skymap[0]); j++ {
+	for j, ej := 0, 0; j < len(skymap[0]); j, ej = j+1, ej+1 {
 		empty := true
 		for i := 0; i < len(skymap); i++ {
 			if g, ok := galaxyMap[pair{i, j}]; ok {
@@ -195,31 +192,20 @@ func (Day11) expand(skymap [][]byte, coefficient int) []pair {
 		if empty {
 			ej += coefficient - 1
 		}
-		ej++
 	}
 
-	galaxies := make([]pair, 0, len(galaxyMap))
-	for _, g := range galaxyMap {
-		galaxies = append(galaxies, g)
-	}
-	return galaxies
+	return utl.Values(galaxyMap)
 }
 
 func (Day11) distance(galaxies []pair) int {
+	dist := func(a, b pair) int {
+		return utl.AbsDiff(a.i, b.i) + utl.AbsDiff(a.j, b.j)
+	}
+
 	sum := 0
 	for i := 0; i < len(galaxies)-1; i++ {
 		for j := i + 1; j < len(galaxies); j++ {
-			idist := galaxies[i].i - galaxies[j].i
-			if idist < 0 {
-				idist = -idist
-			}
-
-			jdist := galaxies[i].j - galaxies[j].j
-			if jdist < 0 {
-				jdist = -jdist
-			}
-
-			sum += int(idist + jdist)
+			sum += dist(galaxies[i], galaxies[j])
 		}
 	}
 	return sum

@@ -190,3 +190,11 @@ const (
 	UNDERLINE = "\033[4m"
 	END       = "\033[0m"
 )
+
+func AbsDiff[T Number](a, b T) T {
+	if a < b {
+		return b - a
+	} else {
+		return a - b
+	}
+}
