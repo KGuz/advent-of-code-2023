@@ -151,6 +151,10 @@ func Any[T any](slice []T, fn func(T) bool) bool {
 	return false
 }
 
+func None[T any](slice []T, fn func(T) bool) bool {
+	return !Any(slice, fn)
+}
+
 func FloodFill(graph [][]byte, si, sj int, fn func(i, j int) bool) map[[2]int]bool {
 	directions := [4][2]int{{0, 1}, {0, -1}, {1, 0}, {-1, 0}}
 
