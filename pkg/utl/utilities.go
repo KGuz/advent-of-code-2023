@@ -202,3 +202,14 @@ func AbsDiff[T Number](a, b T) T {
 		return a - b
 	}
 }
+
+func ToBytes(s string) []byte { return []byte(s) }
+
+func Clone2d[T any](matrix [][]T) [][]T {
+	duplicate := make([][]T, len(matrix))
+	for i := range matrix {
+		duplicate[i] = make([]T, len(matrix[i]))
+		copy(duplicate[i], matrix[i])
+	}
+	return duplicate
+}
