@@ -34,7 +34,6 @@ func Parse(str string) int {
 
 func Captures(re *regexp.Regexp, str string) []string {
 	captures := make([]string, 0)
-
 	matches := re.FindAllStringSubmatch(str, -1)
 
 	for _, match := range matches {
@@ -96,20 +95,24 @@ func Filter[T any](slice []T, fn func(T) bool) []T {
 	return res
 }
 
-func Keys[K interface{ comparable }, V any](m map[K]V) []K {
-	keys := make([]K, 0, len(m))
+// Keys returns the keys of the map m.
+// The keys will be in an indeterminate order.
+func Keys[M ~map[K]V, K comparable, V any](m M) []K {
+	r := make([]K, 0, len(m))
 	for k := range m {
-		keys = append(keys, k)
+		r = append(r, k)
 	}
-	return keys
+	return r
 }
 
-func Values[K interface{ comparable }, V any](m map[K]V) []V {
-	values := make([]V, 0, len(m))
+// Values returns the values of the map m.
+// The values will be in an indeterminate order.
+func Values[M ~map[K]V, K comparable, V any](m M) []V {
+	r := make([]V, 0, len(m))
 	for _, v := range m {
-		values = append(values, v)
+		r = append(r, v)
 	}
-	return values
+	return r
 }
 
 // Greatest common divisor (GCD) via Euclidean algorithm
