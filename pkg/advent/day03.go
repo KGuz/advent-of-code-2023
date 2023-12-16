@@ -117,7 +117,7 @@ func (Day03) PartOne(input string) string {
 		for _, neighbour := range neighbours {
 			dx, dy := neighbour[0], neighbour[1]
 
-			if inbounds(lines, x+dx, y+dy) && isdigit(lines[y+dy][x+dx]) {
+			if inbounds(y+dy, x+dx, len(lines), len(lines[0])) && isdigit(lines[y+dy][x+dx]) {
 				s, e := expand(lines[y+dy], x+dx)
 				numbers[[3]int{s, e, y + dy}] = true
 			}
@@ -156,7 +156,7 @@ func (Day03) PartTwo(input string) string {
 		for _, neighbour := range neighbours {
 			dx, dy := neighbour[0], neighbour[1]
 
-			if inbounds(lines, x+dx, y+dy) && isdigit(lines[y+dy][x+dx]) {
+			if inbounds(y+dy, x+dx, len(lines), len(lines[0])) && isdigit(lines[y+dy][x+dx]) {
 				s, e := expand(lines[y+dy], x+dx)
 				numbers[[3]int{s, e, y + dy}] = true
 			}
@@ -177,10 +177,6 @@ func (Day03) PartTwo(input string) string {
 
 func isdigit[T rune | byte](c T) bool {
 	return '0' <= c && c <= '9'
-}
-
-func inbounds(lines []string, x int, y int) bool {
-	return 0 <= y && y < len(lines) && 0 <= x && x < len(lines[y])
 }
 
 func expand(line string, start int) (int, int) {

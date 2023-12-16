@@ -208,11 +208,20 @@ func AbsDiff[T Number](a, b T) T {
 
 func ToBytes(s string) []byte { return []byte(s) }
 
-func Clone2d[T any](matrix [][]T) [][]T {
+func Clone2D[T any](matrix [][]T) [][]T {
 	duplicate := make([][]T, len(matrix))
 	for i := range matrix {
 		duplicate[i] = make([]T, len(matrix[i]))
 		copy(duplicate[i], matrix[i])
 	}
 	return duplicate
+}
+
+func Bytes2D(s string) [][]byte {
+	var m [][]byte
+	sc := bufio.NewScanner(strings.NewReader(s))
+	for sc.Scan() {
+		m = append(m, []byte(sc.Text()))
+	}
+	return m
 }

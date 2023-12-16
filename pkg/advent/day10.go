@@ -289,8 +289,6 @@ func (d Day10) PartTwo(input string) string {
 	return strconv.Itoa(len(enclosed))
 }
 
-type pair struct{ i, j int }
-
 type Pipe struct{ ci, cj, pi, pj int }
 
 func (Day10) parse(input string) [][]byte {

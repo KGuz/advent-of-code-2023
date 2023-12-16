@@ -168,6 +168,7 @@ func (d Day14) PartTwo(input string) string {
 		d.east(state)
 
 		if final := d.check(state, past, cycle); final != nil {
+			d.show(final)
 			return strconv.Itoa(d.load(final))
 		}
 	}
@@ -189,27 +190,19 @@ func (Day14) parse(input string) [][]byte {
 	return utl.Map(utl.Lines(input), utl.ToBytes)
 }
 
-func (Day14) showDifference(prev [][]byte, curr [][]byte) {
-	for y := 0; y < len(curr); y++ {
-		for x := 0; x < len(curr[0]); x++ {
-			switch curr[y][x] {
+func (Day14) show(state [][]byte) {
+	for y := 0; y < len(state); y++ {
+		for x := 0; x < len(state[0]); x++ {
+			switch state[y][x] {
 			case '#':
-				fmt.Print(utl.END, "█", utl.END)
+				fmt.Print("●")
 			case '.':
-				if prev[y][x] == '.' {
-					fmt.Print(" ")
-				} else {
-					fmt.Print(utl.RED, "●", utl.END)
-				}
+				fmt.Print(" ")
 			case 'O':
-				if prev[y][x] == 'O' {
-					fmt.Print("●")
-				} else {
-					fmt.Print(utl.GREEN, "●", utl.END)
-				}
+				fmt.Print(utl.YELLOW, "●", utl.END)
 			}
 		}
-		println()
+		fmt.Print("\n")
 	}
 }
 
