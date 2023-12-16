@@ -7,46 +7,14 @@ import (
 	"testing"
 )
 
-func name(day int, part int) string {
-	if part == 1 {
-		return fmt.Sprintf("Day%02dPartOne", day)
-	}
-	if part == 2 {
-		return fmt.Sprintf("Day%02dPartTwo", day)
-	}
-	panic("yeah, if you could just pick one that would be great")
+type Params struct {
+	day  int
+	part int
+	want string
 }
 
-func solve(day int, part int, input string) string {
-	puzzle, err := puzzle.Dispatch(day)
-	if err != nil {
-		panic(err)
-	}
-
-	if part == 1 {
-		return puzzle.PartOne(input)
-	}
-	return puzzle.PartTwo(input)
-}
-
-func test(day int, part int, want string) error {
-	input, err := assets.LoadExample(day)
-	if err != nil {
-		panic(err)
-	}
-
-	if got := solve(day, part, input); got != want {
-		return fmt.Errorf("got %s, want %s", got, want)
-	}
-	return nil
-}
-
-func TestPuzzles(t *testing.T) {
-	var tests = []struct {
-		day  int
-		part int
-		want string
-	}{
+func TestPuzzlesWithExamples(t *testing.T) {
+	test(t, true, []Params{
 		{1, 1, "231"},
 		{1, 2, "281"},
 		{2, 1, "8"},
@@ -79,13 +47,70 @@ func TestPuzzles(t *testing.T) {
 		{15, 2, "145"},
 		{16, 1, "46"},
 		{16, 2, "51"},
-	}
+	})
+}
 
-	for _, tt := range tests {
+func TestPuzzlesWithInput(t *testing.T) {
+	test(t, false, []Params{
+		{1, 1, "54081"},
+		{1, 2, "54649"},
+		{2, 1, "2156"},
+		{2, 2, "66909"},
+		{3, 1, "528819"},
+		{3, 2, "80403602"},
+		{4, 1, "28750"},
+		{4, 2, "10212704"},
+		{5, 1, "175622908"},
+		{5, 2, "5200543"},
+		{6, 1, "588588"},
+		{6, 2, "34655848"},
+		{7, 1, "250602641"},
+		{7, 2, "251037509"},
+		{8, 1, "11309"},
+		{8, 2, "13740108158591"},
+		{9, 1, "1853145119"},
+		{9, 2, "923"},
+		{10, 1, "6823"},
+		{10, 2, "415"},
+		{11, 1, "9686930"},
+		{11, 2, "630728425490"},
+		{12, 1, "6935"},
+		{12, 2, "3920437278260"},
+		{13, 1, "34100"},
+		{13, 2, "33106"},
+		{14, 1, "112773"},
+		{14, 2, "98894"},
+		{15, 1, "503487"},
+		{15, 2, "261505"},
+		{16, 1, "7067"},
+		{16, 2, "7324"},
+	})
+}
+
+func test(t *testing.T, example bool, params []Params) {
+	for _, tt := range params {
 		t.Run(name(tt.day, tt.part), func(t *testing.T) {
-			if err := test(tt.day, tt.part, tt.want); err != nil {
-				t.Error(err)
+			input, _ := assets.Load(tt.day, example)
+			if got := solve(tt.day, tt.part, input); got != tt.want {
+				t.Errorf("got %s, want %s", got, tt.want)
 			}
 		})
+	}
+}
+
+func name(day int, part int) string {
+	if part == 1 {
+		return fmt.Sprintf("Day%02dPartOne", day)
+	} else {
+		return fmt.Sprintf("Day%02dPartTwo", day)
+	}
+}
+
+func solve(day int, part int, input string) string {
+	puzzle, _ := puzzle.Dispatch(day)
+	if part == 1 {
+		return puzzle.PartOne(input)
+	} else {
+		return puzzle.PartTwo(input)
 	}
 }
