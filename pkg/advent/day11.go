@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"strconv"
 )
 
@@ -154,15 +153,9 @@ func (d Day11) PartTwo(input string) string {
 }
 
 func (d Day11) cosmicExpansion(input string, coefficient int) int {
-	skymap := d.parse(input)
+	skymap := elements(input)
 	galaxies := d.expand(skymap, coefficient)
 	return d.distance(galaxies)
-}
-
-func (Day11) parse(input string) [][]byte {
-	return utl.Map(utl.Lines(input), func(line string) []byte {
-		return []byte(line)
-	})
 }
 
 func (Day11) expand(skymap [][]byte, coefficient int) []pair {
@@ -194,12 +187,12 @@ func (Day11) expand(skymap [][]byte, coefficient int) []pair {
 		}
 	}
 
-	return utl.Values(galaxyMap)
+	return values(galaxyMap)
 }
 
 func (Day11) distance(galaxies []pair) int {
 	dist := func(a, b pair) int {
-		return utl.AbsDiff(a.i, b.i) + utl.AbsDiff(a.j, b.j)
+		return abs(a.i-b.i) + abs(a.j-b.j)
 	}
 
 	sum := 0

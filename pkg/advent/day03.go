@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"strconv"
 )
 
@@ -96,94 +95,83 @@ type Day03 struct {
 	What is the sum of all of the gear ratios in your engine schematic? */
 }
 
-func (Day03) PartOne(input string) string {
-	lines := utl.Lines(input)
-	symbols := make([][2]int, 0)
+func (d Day03) PartOne(input string) string {
+	lines := lines(input)
 
-	for y, str := range lines {
-		for x, char := range str {
-			if char != '.' && !isdigit(char) {
-				symbols = append(symbols, [2]int{x, y})
-			}
-		}
-	}
+	symbols := d.symbols(lines, func(c rune) bool {
+		return c != '.' && !isdigit(c)
+	})
 
-	neighbours := [8][2]int{{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}}
 	numbers := make(map[[3]int]bool)
-
-	for _, pt := range symbols {
-		x, y := pt[0], pt[1]
-
-		for _, neighbour := range neighbours {
-			dx, dy := neighbour[0], neighbour[1]
-
-			if inbounds(y+dy, x+dx, len(lines), len(lines[0])) && isdigit(lines[y+dy][x+dx]) {
-				s, e := expand(lines[y+dy], x+dx)
-				numbers[[3]int{s, e, y + dy}] = true
-			}
-		}
+	for _, pos := range symbols {
+		d.adjecent(pos, lines, numbers)
 	}
 
 	sum := 0
-
 	for num := range numbers {
 		s, e, y := num[0], num[1], num[2]
-		sum += utl.Parse(lines[y][s:e])
+		sum += parse(lines[y][s:e])
 	}
-
 	return strconv.Itoa(sum)
 }
 
-func (Day03) PartTwo(input string) string {
-	lines := utl.Lines(input)
-	gears := make([][2]int, 0)
+func (d Day03) PartTwo(input string) string {
+	lines := lines(input)
 
-	for y, str := range lines {
-		for x, char := range str {
-			if char == '*' {
-				gears = append(gears, [2]int{x, y})
-			}
-		}
-	}
+	gears := d.symbols(lines, func(c rune) bool {
+		return c == '*'
+	})
 
-	neighbours := [8][2]int{{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}}
 	sum := 0
-
-	for _, pt := range gears {
+	for _, pos := range gears {
 		numbers := make(map[[3]int]bool)
-		x, y := pt[0], pt[1]
-
-		for _, neighbour := range neighbours {
-			dx, dy := neighbour[0], neighbour[1]
-
-			if inbounds(y+dy, x+dx, len(lines), len(lines[0])) && isdigit(lines[y+dy][x+dx]) {
-				s, e := expand(lines[y+dy], x+dx)
-				numbers[[3]int{s, e, y + dy}] = true
-			}
-		}
+		d.adjecent(pos, lines, numbers)
 
 		if len(numbers) == 2 {
-			product := 1
-			for n := range numbers {
-				s, e, y := n[0], n[1], n[2]
-				product *= utl.Parse(lines[y][s:e])
-			}
-			sum += product
+			nums := d.convert(numbers, lines)
+			sum += mul(nums)
 		}
 	}
 
 	return strconv.Itoa(sum)
 }
 
-func isdigit[T rune | byte](c T) bool {
-	return '0' <= c && c <= '9'
+func (Day03) symbols(lines []string, f func(rune) bool) []pair {
+	symbols := make([]pair, 0)
+	for y, str := range lines {
+		for x, char := range str {
+			if f(char) {
+				symbols = append(symbols, pair{y, x})
+			}
+		}
+	}
+	return symbols
 }
 
-func expand(line string, start int) (int, int) {
+func (d Day03) adjecent(pos pair, lines []string, numbers map[[3]int]bool) {
+	bounds := pair{len(lines), len(lines[0])}
+
+	for _, dir := range directions() {
+		n := pair{pos.i + dir.i, pos.j + dir.j}
+		if inbounds(n, bounds) && isdigit(lines[n.i][n.j]) {
+			s, e := d.expand(lines[n.i], n.j)
+			numbers[[3]int{s, e, n.i}] = true
+		}
+	}
+}
+
+func (Day03) expand(line string, start int) (int, int) {
 	s, e := start, start
 	for ; s >= 0 && isdigit(line[s]); s-- {
 	}
 	for ; e < len(line) && isdigit(line[e]); e++ {
 	}
 	return s + 1, e
+}
+
+func (Day03) convert(numbers map[[3]int]bool, lines []string) []int {
+	return transform(keys(numbers), func(num [3]int) int {
+		s, e, y := num[0], num[1], num[2]
+		return parse(lines[y][s:e])
+	})
 }

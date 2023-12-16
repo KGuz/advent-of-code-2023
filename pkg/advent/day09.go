@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"strconv"
 	"strings"
 )
@@ -148,23 +147,23 @@ type Day09 struct {
 }
 
 func (d Day09) PartOne(input string) string {
-	values := utl.Map(d.parse(input), d.extrapolateForward)
-	return strconv.Itoa(utl.Sum(values))
+	values := transform(d.parse(input), d.extrapolateForward)
+	return strconv.Itoa(sum(values))
 }
 
 func (d Day09) PartTwo(input string) string {
-	values := utl.Map(d.parse(input), d.extrapolateBackward)
-	return strconv.Itoa(utl.Sum(values))
+	values := transform(d.parse(input), d.extrapolateBackward)
+	return strconv.Itoa(sum(values))
 }
 
 func (Day09) parse(input string) [][]int {
-	return utl.Map(utl.Lines(input), func(line string) []int {
-		return utl.Map(strings.Fields(line), utl.Parse)
+	return transform(lines(input), func(line string) []int {
+		return transform(strings.Fields(line), parse)
 	})
 }
 
 func (d Day09) extrapolateForward(history []int) int {
-	if utl.All(history, func(val int) bool { return val == 0 }) {
+	if all(history, func(val int) bool { return val == 0 }) {
 		return 0
 	}
 
@@ -177,7 +176,7 @@ func (d Day09) extrapolateForward(history []int) int {
 }
 
 func (d Day09) extrapolateBackward(history []int) int {
-	if utl.All(history, func(val int) bool { return val == 0 }) {
+	if all(history, func(val int) bool { return val == 0 }) {
 		return 0
 	}
 

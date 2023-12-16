@@ -1,7 +1,7 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
+	"aoc/pkg/dbg"
 	"fmt"
 	"slices"
 	"strconv"
@@ -255,7 +255,7 @@ type Day10 struct {
 }
 
 func (d Day10) PartOne(input string) string {
-	graph := d.parse(input)
+	graph := elements(input)
 
 	i, j := d.start(graph)
 	pipes := d.traverse(graph, i, j)
@@ -264,7 +264,7 @@ func (d Day10) PartOne(input string) string {
 }
 
 func (d Day10) PartTwo(input string) string {
-	graph := d.parse(input)
+	graph := elements(input)
 
 	si, sj := d.start(graph)
 	pipes := d.traverse(graph, si, sj)
@@ -290,12 +290,6 @@ func (d Day10) PartTwo(input string) string {
 }
 
 type Pipe struct{ ci, cj, pi, pj int }
-
-func (Day10) parse(input string) [][]byte {
-	return utl.Map(utl.Lines(input), func(line string) []byte {
-		return []byte(line)
-	})
-}
 
 func (Day10) start(graph [][]byte) (int, int) {
 	for i, row := range graph {
@@ -370,11 +364,11 @@ func (Day10) loopWalls(graph [][]byte, pipes []Pipe) map[pair]bool {
 func (Day10) visualize(graph [][]byte, loop map[pair]bool, inside map[pair]bool) {
 	for i := 0; i < len(graph); i++ {
 		for j := 0; j < len(graph[i]); j++ {
-			if _, ok := loop[pair{i, j}]; !ok {
-				fmt.Print(utl.YELLOW)
+			if !loop[pair{i, j}] {
+				fmt.Print(dbg.YELLOW)
 			}
-			if _, ok := inside[pair{i, j}]; ok {
-				fmt.Print(utl.BLUE)
+			if !inside[pair{i, j}] {
+				fmt.Print(dbg.BLUE)
 			}
 
 			switch graph[i][j] {
@@ -391,7 +385,7 @@ func (Day10) visualize(graph [][]byte, loop map[pair]bool, inside map[pair]bool)
 			case '|':
 				fmt.Print("┃ ")
 			case '.':
-				if _, ok := inside[pair{i, j}]; ok {
+				if inside[pair{i, j}] {
 					fmt.Print("I ")
 				} else {
 					fmt.Print("O ")
@@ -399,8 +393,8 @@ func (Day10) visualize(graph [][]byte, loop map[pair]bool, inside map[pair]bool)
 			case 'S':
 				fmt.Print("S ")
 			}
-			fmt.Print(utl.END)
+			fmt.Print(dbg.END)
 		}
-		println()
+		fmt.Println()
 	}
 }

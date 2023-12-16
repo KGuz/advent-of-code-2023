@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"cmp"
 	"regexp"
 	"slices"
@@ -206,14 +205,12 @@ func (d Day05) PartOne(input string) string {
 }
 
 func (d Day05) PartTwo(input string) string {
-	type Pos struct{ start, end int }
-
 	seedNums, maps := d.parse(input)
-	seeds := make([]Pos, 0, len(seedNums)/2)
+	seeds := make([]pair, 0, len(seedNums)/2)
 
 	for i := 0; i < len(seedNums); i += 2 {
 		start, length := seedNums[i], seedNums[i+1]
-		seeds = append(seeds, Pos{start, start + length - 1})
+		seeds = append(seeds, pair{start, start + length - 1})
 	}
 
 	for _, ranges := range maps {
@@ -221,18 +218,18 @@ func (d Day05) PartTwo(input string) string {
 
 		for n, seed := range seeds {
 			for _, rmap := range ranges {
-				rstart, lend := max(seed.start, rmap.src), min(seed.end, rmap.src+rmap.len-1)
-				common := Pos{rstart, lend}
+				rstart, lend := max(seed.i, rmap.src), min(seed.j, rmap.src+rmap.len-1)
+				common := pair{rstart, lend}
 
-				if common.start <= common.end {
+				if common.i <= common.j {
 					offset := rmap.dst - rmap.src
-					next[n] = Pos{common.start + offset, common.end + offset}
+					next[n] = pair{common.i + offset, common.j + offset}
 
-					if common.start > seed.start {
-						next = append(next, Pos{seed.start, common.start - 1})
+					if common.i > seed.i {
+						next = append(next, pair{seed.i, common.i - 1})
 					}
-					if common.end < seed.end {
-						next = append(next, Pos{common.end + 1, seed.end})
+					if common.j < seed.j {
+						next = append(next, pair{common.j + 1, seed.j})
 					}
 					break
 				}
@@ -241,11 +238,11 @@ func (d Day05) PartTwo(input string) string {
 		seeds = next
 	}
 
-	min := slices.MinFunc(seeds, func(a, b Pos) int {
-		return cmp.Compare(a.start, b.start)
+	min := slices.MinFunc(seeds, func(a, b pair) int {
+		return cmp.Compare(a.i, b.i)
 	})
 
-	return strconv.Itoa(min.start)
+	return strconv.Itoa(min.i)
 }
 
 type RangeMap struct {
@@ -258,11 +255,11 @@ func (Day05) parse(input string) ([]int, [][]RangeMap) {
 	re := regexp.MustCompile(`\d+`)
 
 	parts := strings.Split(input, ":")[1:]
-	seeds := utl.Map(re.FindAllString(parts[0], -1), utl.Parse)
+	seeds := transform(re.FindAllString(parts[0], -1), parse)
 
 	maps := make([][]RangeMap, 0, len(parts)-1)
 	for _, part := range parts[1:] {
-		nums := utl.Map(re.FindAllString(part, -1), utl.Parse)
+		nums := transform(re.FindAllString(part, -1), parse)
 
 		ranges := make([]RangeMap, 0, len(nums)/3)
 		for i := 0; i < len(nums); i += 3 {

@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"math"
 	"regexp"
 	"slices"
@@ -133,11 +132,11 @@ func (Day04) PartOne(input string) string {
 	re := regexp.MustCompile(`\d+`)
 	points := 0
 
-	for _, str := range utl.Lines(input) {
+	for _, str := range lines(input) {
 		parts := strings.Split(str, "|")
 
-		winning := utl.Captures(re, parts[0])[1:]
-		scratched := utl.Captures(re, parts[1])
+		winning := captures(re, parts[0])[1:]
+		scratched := captures(re, parts[1])
 
 		matches := -1.
 		for _, win := range winning {
@@ -153,14 +152,14 @@ func (Day04) PartOne(input string) string {
 
 func (Day04) PartTwo(input string) string {
 	re := regexp.MustCompile(`\d+`)
-	lines := utl.Lines(input)
+	lines := lines(input)
 	cards := make([]int, len(lines))
 
 	for i := len(lines) - 1; i >= 0; i-- {
 		parts := strings.Split(lines[i], "|")
 
-		winning := utl.Captures(re, parts[0])[1:]
-		scratched := utl.Captures(re, parts[1])
+		winning := captures(re, parts[0])[1:]
+		scratched := captures(re, parts[1])
 
 		matches := 0
 		for _, win := range winning {
@@ -169,8 +168,8 @@ func (Day04) PartTwo(input string) string {
 			}
 		}
 
-		cards[i] = matches + utl.Sum(cards[i+1:i+matches+1])
+		cards[i] = matches + sum(cards[i+1:i+matches+1])
 	}
 
-	return strconv.Itoa(utl.Sum(cards) + len(cards))
+	return strconv.Itoa(sum(cards) + len(cards))
 }

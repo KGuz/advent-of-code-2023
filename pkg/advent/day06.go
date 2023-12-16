@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"regexp"
 	"strconv"
 	"strings"
@@ -123,11 +122,11 @@ type Day06 struct {
 }
 
 func (d Day06) PartOne(input string) string {
-	lines := utl.Lines(input)
+	lines := lines(input)
 	re := regexp.MustCompile(`\d+`)
 
-	time := utl.Map(re.FindAllString(lines[0], -1), utl.Parse)
-	dist := utl.Map(re.FindAllString(lines[1], -1), utl.Parse)
+	time := transform(re.FindAllString(lines[0], -1), parse)
+	dist := transform(re.FindAllString(lines[1], -1), parse)
 
 	margin := 1
 	for i := 0; i < len(time); i++ {
@@ -144,11 +143,11 @@ func (d Day06) PartOne(input string) string {
 }
 
 func (d Day06) PartTwo(input string) string {
-	lines := utl.Lines(input)
+	lines := lines(input)
 	re := regexp.MustCompile(`\d+`)
 
-	time := utl.Parse(strings.Join(re.FindAllString(lines[0], -1), ""))
-	dist := utl.Parse(strings.Join(re.FindAllString(lines[1], -1), ""))
+	time := parse(strings.Join(re.FindAllString(lines[0], -1), ""))
+	dist := parse(strings.Join(re.FindAllString(lines[1], -1), ""))
 
 	records := 0
 	for t := 1; t < time; t++ {

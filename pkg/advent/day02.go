@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"regexp"
 	"strconv"
 	"strings"
@@ -98,62 +97,63 @@ type Day02 struct {
 	What is the sum of the power of these sets? */
 }
 
-func (Day02) PartOne(input string) string {
+func (d Day02) PartOne(input string) string {
 	re := regexp.MustCompile(`(?P<red>\d+) red|(?P<blue>\d+) blue|(?P<green>\d+) green`)
-	possible_games := 0
 
-	for n, game := range utl.Lines(input) {
-		valid_game := true
-		for _, set := range strings.Split(game, ";") {
-			captures := utl.CapturesNamed(re, set)
-			red, green, blue := 12, 13, 14
-
-			if val, ok := captures["red"]; ok {
-				red -= utl.Parse(val)
-			}
-			if val, ok := captures["green"]; ok {
-				green -= utl.Parse(val)
-			}
-			if val, ok := captures["blue"]; ok {
-				blue -= utl.Parse(val)
-			}
-
-			if red < 0 || green < 0 || blue < 0 {
-				valid_game = false
-				break
-			}
-		}
-
-		if valid_game {
-			possible_games += n + 1
+	answer := 0
+	for n, game := range lines(input) {
+		if d.possible(game, re) {
+			answer += n + 1
 		}
 	}
-
-	return strconv.Itoa(possible_games)
+	return strconv.Itoa(answer)
 }
 
-func (Day02) PartTwo(input string) string {
+func (d Day02) PartTwo(input string) string {
 	re := regexp.MustCompile(`(?P<red>\d+) red|(?P<blue>\d+) blue|(?P<green>\d+) green`)
-	total_power := 0
 
-	for _, game := range utl.Lines(input) {
-		red, green, blue := 0, 0, 0
-		for _, set := range strings.Split(game, ";") {
-			captures := utl.CapturesNamed(re, set)
+	answer := accumulate(lines(input), func(acc int, game string) int {
+		return acc + d.power(game, re)
+	})
+	return strconv.Itoa(answer)
+}
 
-			if val, ok := captures["red"]; ok {
-				red = max(red, utl.Parse(val))
-			}
-			if val, ok := captures["green"]; ok {
-				green = max(green, utl.Parse(val))
-			}
-			if val, ok := captures["blue"]; ok {
-				blue = max(blue, utl.Parse(val))
-			}
+func (Day02) possible(game string, re *regexp.Regexp) bool {
+	for _, set := range strings.Split(game, ";") {
+		caps := capturesNamed(re, set)
+		red, green, blue := 12, 13, 14
+
+		if val, ok := caps["red"]; ok {
+			red -= parse(val)
+		}
+		if val, ok := caps["green"]; ok {
+			green -= parse(val)
+		}
+		if val, ok := caps["blue"]; ok {
+			blue -= parse(val)
 		}
 
-		total_power += red * green * blue
+		if red < 0 || green < 0 || blue < 0 {
+			return false
+		}
 	}
+	return true
+}
 
-	return strconv.Itoa(total_power)
+func (Day02) power(game string, re *regexp.Regexp) int {
+	red, green, blue := 0, 0, 0
+	for _, set := range strings.Split(game, ";") {
+		caps := capturesNamed(re, set)
+
+		if val, ok := caps["red"]; ok {
+			red = max(red, parse(val))
+		}
+		if val, ok := caps["green"]; ok {
+			green = max(green, parse(val))
+		}
+		if val, ok := caps["blue"]; ok {
+			blue = max(blue, parse(val))
+		}
+	}
+	return red * green * blue
 }

@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"regexp"
 	"strconv"
 )
@@ -120,26 +119,26 @@ func (d Day08) PartOne(input string) string {
 func (d Day08) PartTwo(input string) string {
 	instructions, graph := d.parse(input)
 
-	startNodes := utl.Filter(utl.Keys(graph), func(node string) bool {
+	startNodes := filter(keys(graph), func(node string) bool {
 		return node[2] == 'A'
 	})
 
-	steps := utl.Map(startNodes, func(node string) int {
+	steps := transform(startNodes, func(node string) int {
 		return d.hauntedWasteland(instructions, graph, node)
 	})
 
-	lcm := utl.LCM(steps[0], steps[1], steps[2:]...)
+	lcm := lcm(steps...)
 	return strconv.Itoa(lcm)
 }
 
 func (Day08) parse(input string) (string, map[string][2]string) {
 	re := regexp.MustCompile(`(\w+) = \((\w+), (\w+)\)`)
-	lines := utl.Lines(input)
+	lines := lines(input)
 
 	graph := make(map[string][2]string)
 	for _, line := range lines[2:] {
-		captures := utl.Captures(re, line)[1:]
-		node, left, right := captures[0], captures[1], captures[2]
+		caps := captures(re, line)[1:]
+		node, left, right := caps[0], caps[1], caps[2]
 		graph[node] = [2]string{left, right}
 	}
 

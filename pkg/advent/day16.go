@@ -149,7 +149,7 @@ type Day16 struct {
 func (d Day16) PartOne(input string) string {
 	contraption := elements(input)
 
-	beam := Beam{pos: pair{0, -1}, dir: DIR.E()}
+	beam := Beam{pos: pair{0, -1}, dir: E}
 	energized := d.trace(beam, contraption)
 	tiles := d.tiles(energized)
 
@@ -162,20 +162,20 @@ func (d Day16) PartTwo(input string) string {
 
 	tiles := 0
 	for i := 0; i < bounds.i; i++ {
-		beam := Beam{pos: pair{i, -1}, dir: DIR.E()}
+		beam := Beam{pos: pair{i, -1}, dir: E}
 		energized := d.trace(beam, contraption)
 		tiles = max(tiles, d.tiles(energized))
 
-		beam = Beam{pos: pair{i, bounds.j}, dir: DIR.W()}
+		beam = Beam{pos: pair{i, bounds.j}, dir: W}
 		energized = d.trace(beam, contraption)
 		tiles = max(tiles, d.tiles(energized))
 	}
 	for j := 0; j < bounds.j; j++ {
-		beam := Beam{pos: pair{-1, j}, dir: DIR.S()}
+		beam := Beam{pos: pair{-1, j}, dir: S}
 		energized := d.trace(beam, contraption)
 		tiles = max(tiles, d.tiles(energized))
 
-		beam = Beam{pos: pair{bounds.i, j}, dir: DIR.N()}
+		beam = Beam{pos: pair{bounds.i, j}, dir: N}
 		energized = d.trace(beam, contraption)
 		tiles = max(tiles, d.tiles(energized))
 	}
@@ -188,6 +188,8 @@ type Beam struct {
 }
 
 func (d Day16) trace(first Beam, contraption [][]byte) map[Beam]bool {
+	bounds := pair{len(contraption), len(contraption[0])}
+
 	visited := make(map[Beam]bool)
 	queue := []Beam{first}
 
@@ -201,7 +203,7 @@ func (d Day16) trace(first Beam, contraption [][]byte) map[Beam]bool {
 		visited[beam] = true
 
 		beam.pos = pair{beam.pos.i + beam.dir.i, beam.pos.j + beam.dir.j}
-		if inbounds(beam.pos.i, beam.pos.j, len(contraption), len(contraption[0])) {
+		if inbounds(beam.pos, bounds) {
 			queue = append(queue, d.update(beam, contraption)...)
 		}
 	}
@@ -217,41 +219,41 @@ func (Day16) update(beam Beam, contraption [][]byte) []Beam {
 		beams = append(beams, beam)
 	case '/':
 		switch beam.dir {
-		case DIR.N():
-			beams = append(beams, Beam{beam.pos, DIR.E()})
-		case DIR.E():
-			beams = append(beams, Beam{beam.pos, DIR.N()})
-		case DIR.W():
-			beams = append(beams, Beam{beam.pos, DIR.S()})
-		case DIR.S():
-			beams = append(beams, Beam{beam.pos, DIR.W()})
+		case N:
+			beams = append(beams, Beam{beam.pos, E})
+		case E:
+			beams = append(beams, Beam{beam.pos, N})
+		case W:
+			beams = append(beams, Beam{beam.pos, S})
+		case S:
+			beams = append(beams, Beam{beam.pos, W})
 		}
 	case '\\':
 		switch beam.dir {
-		case DIR.N():
-			beams = append(beams, Beam{beam.pos, DIR.W()})
-		case DIR.E():
-			beams = append(beams, Beam{beam.pos, DIR.S()})
-		case DIR.W():
-			beams = append(beams, Beam{beam.pos, DIR.N()})
-		case DIR.S():
-			beams = append(beams, Beam{beam.pos, DIR.E()})
+		case N:
+			beams = append(beams, Beam{beam.pos, W})
+		case E:
+			beams = append(beams, Beam{beam.pos, S})
+		case W:
+			beams = append(beams, Beam{beam.pos, N})
+		case S:
+			beams = append(beams, Beam{beam.pos, E})
 		}
 	case '-':
 		switch beam.dir {
-		case DIR.N(), DIR.S():
-			beams = append(beams, Beam{beam.pos, DIR.E()})
-			beams = append(beams, Beam{beam.pos, DIR.W()})
-		case DIR.E(), DIR.W():
+		case N, S:
+			beams = append(beams, Beam{beam.pos, E})
+			beams = append(beams, Beam{beam.pos, W})
+		case E, W:
 			beams = append(beams, beam)
 		}
 	case '|':
 		switch beam.dir {
-		case DIR.N(), DIR.S():
+		case N, S:
 			beams = append(beams, beam)
-		case DIR.E(), DIR.W():
-			beams = append(beams, Beam{beam.pos, DIR.N()})
-			beams = append(beams, Beam{beam.pos, DIR.S()})
+		case E, W:
+			beams = append(beams, Beam{beam.pos, N})
+			beams = append(beams, Beam{beam.pos, S})
 		}
 	}
 	return beams

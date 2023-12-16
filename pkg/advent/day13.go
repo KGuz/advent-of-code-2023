@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"strconv"
 )
 
@@ -189,7 +188,7 @@ func (d Day13) PartTwo(input string) string {
 }
 
 func (d Day13) parse(input string) ([]map[pair]bool, []pair) {
-	lines := utl.Lines(input)
+	lines := lines(input)
 
 	sep := []int{-1}
 	for n, line := range lines {
@@ -250,7 +249,7 @@ func reflect(p pair, ir, jr float64) pair {
 
 func (Day13) pointOfIncidence(mirrors map[pair]bool, bounds pair, smudge bool) (int, int) {
 	type fpair struct{ i, j float64 }
-	points := utl.Keys(mirrors)
+	points := keys(mirrors)
 
 	for n := 0; n < len(points); n++ {
 		for m := n + 1; m < len(points); m++ {
@@ -267,7 +266,7 @@ func (Day13) pointOfIncidence(mirrors map[pair]bool, bounds pair, smudge bool) (
 					continue // p' would be out of bounds
 				}
 
-				if _, ok := mirrors[pp]; !ok {
+				if !mirrors[pp] {
 					if smudge {
 						smudge = false // wipe off the smudge
 						continue

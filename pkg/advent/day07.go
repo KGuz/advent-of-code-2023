@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"cmp"
 	"slices"
 	"strconv"
@@ -144,8 +143,8 @@ type Day07 struct {
 }
 
 func (Day07) PartOne(input string) string {
-	hands := utl.Map(utl.Lines(input), func(str string) PokerHandSimple {
-		return PokerHandSimple{cards: []byte(str[:5]), bid: utl.Parse(str[6:])}
+	hands := transform(lines(input), func(str string) PokerHandSimple {
+		return PokerHandSimple{cards: []byte(str[:5]), bid: parse(str[6:])}
 	})
 
 	slices.SortFunc(hands, func(a, b PokerHandSimple) int {
@@ -161,8 +160,8 @@ func (Day07) PartOne(input string) string {
 }
 
 func (d Day07) PartTwo(input string) string {
-	hands := utl.Map(utl.Lines(input), func(str string) PokerHandJokers {
-		return PokerHandJokers{cards: []byte(str[:5]), bid: utl.Parse(str[6:])}
+	hands := transform(lines(input), func(str string) PokerHandJokers {
+		return PokerHandJokers{cards: []byte(str[:5]), bid: parse(str[6:])}
 	})
 
 	slices.SortFunc(hands, func(a, b PokerHandJokers) int {

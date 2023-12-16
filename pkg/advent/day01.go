@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"regexp"
 	"sort"
 	"strconv"
@@ -78,27 +77,24 @@ type Day01 struct {
 
 func (Day01) PartOne(input string) string {
 	re := regexp.MustCompile(`\d`)
-	sum := 0
 
-	for _, str := range utl.Lines(input) {
-		captures := utl.Captures(re, str)
-		sum += 10*utl.Parse(captures[0]) + utl.Parse(captures[len(captures)-1])
-	}
-
-	return strconv.Itoa(sum)
+	answer := accumulate(lines(input), func(acc int, s string) int {
+		caps := captures(re, s)
+		first, last := caps[0], caps[len(caps)-1]
+		return acc + 10*parse(first) + parse(last)
+	})
+	return strconv.Itoa(answer)
 }
 
 func (Day01) PartTwo(input string) string {
-	patterns := [9]string{"1|one", "2|two", "3|three", "4|four", "5|five", "6|six", "7|seven", "8|eight", "9|nine"}
-	sum := 0
+	patterns := []string{"1|one", "2|two", "3|three", "4|four", "5|five", "6|six", "7|seven", "8|eight", "9|nine"}
+	regexes := transform(patterns, regexp.MustCompile)
 
-	for _, str := range utl.Lines(input) {
+	answer := accumulate(lines(input), func(acc int, s string) int {
 		occurances := make([][2]int, 0)
 
-		for n, pattern := range patterns {
-			re := regexp.MustCompile(pattern)
-			matches := re.FindAllStringIndex(str, -1)
-
+		for n, re := range regexes {
+			matches := re.FindAllStringIndex(s, -1)
 			for _, pos := range matches {
 				occurances = append(occurances, [2]int{pos[0], n + 1})
 			}
@@ -109,8 +105,7 @@ func (Day01) PartTwo(input string) string {
 		})
 
 		first, last := occurances[0][1], occurances[len(occurances)-1][1]
-		sum += 10*first + last
-	}
-
-	return strconv.Itoa(sum)
+		return acc + 10*first + last
+	})
+	return strconv.Itoa(answer)
 }

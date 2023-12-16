@@ -1,7 +1,6 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
 	"slices"
 	"strconv"
 	"strings"
@@ -201,13 +200,13 @@ func HotSprings(springs []byte, damaged []int) HotSpringsState {
 }
 
 func (d Day12) parse(input string) ([][]byte, [][]int) {
-	lines := utl.Lines(input)
+	lines := lines(input)
 	springs := make([][]byte, 0, len(lines))
 	groups := make([][]int, 0, len(lines))
 
 	for _, line := range lines {
 		fields := strings.Fields(line)
-		group := utl.Map(strings.Split(fields[1], ","), utl.Parse)
+		group := transform(strings.Split(fields[1], ","), parse)
 		springs = append(springs, []byte(fields[0]))
 		groups = append(groups, group)
 	}

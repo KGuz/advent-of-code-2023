@@ -1,7 +1,7 @@
 package advent
 
 import (
-	"aoc/pkg/utl"
+	"aoc/pkg/dbg"
 	"bytes"
 	"fmt"
 	"strconv"
@@ -152,20 +152,20 @@ type Day14 struct {
 }
 
 func (d Day14) PartOne(input string) string {
-	state := d.parse(input)
-	d.north(state)
+	state := elements(input)
+	d.tiltN(state)
 	return strconv.Itoa(d.load(state))
 }
 
 func (d Day14) PartTwo(input string) string {
-	state := d.parse(input)
+	state := elements(input)
 	past := make(map[string]int)
 
 	for cycle := 1; ; cycle++ {
-		d.north(state)
-		d.west(state)
-		d.south(state)
-		d.east(state)
+		d.tiltN(state)
+		d.tiltW(state)
+		d.tiltS(state)
+		d.tiltE(state)
 
 		if final := d.check(state, past, cycle); final != nil {
 			d.show(final)
@@ -186,10 +186,6 @@ func (Day14) load(state [][]byte) int {
 	return sum
 }
 
-func (Day14) parse(input string) [][]byte {
-	return utl.Map(utl.Lines(input), utl.ToBytes)
-}
-
 func (Day14) show(state [][]byte) {
 	for y := 0; y < len(state); y++ {
 		for x := 0; x < len(state[0]); x++ {
@@ -199,7 +195,7 @@ func (Day14) show(state [][]byte) {
 			case '.':
 				fmt.Print(" ")
 			case 'O':
-				fmt.Print(utl.YELLOW, "●", utl.END)
+				fmt.Print(dbg.YELLOW, "●", dbg.END)
 			}
 		}
 		fmt.Print("\n")
@@ -210,7 +206,7 @@ func (Day14) hash(state [][]byte) string {
 	return string(bytes.Join(state, []byte{'\n'}))
 }
 
-func (Day14) north(state [][]byte) {
+func (Day14) tiltN(state [][]byte) {
 	for j := 0; j < len(state[0]); j++ {
 		y := 0
 		for i := 0; i < len(state); i++ {
@@ -224,7 +220,7 @@ func (Day14) north(state [][]byte) {
 	}
 }
 
-func (Day14) west(state [][]byte) {
+func (Day14) tiltW(state [][]byte) {
 	for i := 0; i < len(state); i++ {
 		x := 0
 		for j := 0; j < len(state[0]); j++ {
@@ -238,7 +234,7 @@ func (Day14) west(state [][]byte) {
 	}
 }
 
-func (Day14) south(state [][]byte) {
+func (Day14) tiltS(state [][]byte) {
 	for j := 0; j < len(state[0]); j++ {
 		y := len(state) - 1
 		for i := len(state) - 1; i >= 0; i-- {
@@ -252,7 +248,7 @@ func (Day14) south(state [][]byte) {
 	}
 }
 
-func (Day14) east(state [][]byte) {
+func (Day14) tiltE(state [][]byte) {
 	for i := 0; i < len(state); i++ {
 		x := len(state[0]) - 1
 		for j := len(state[0]) - 1; j >= 0; j-- {
@@ -280,7 +276,7 @@ func (d Day14) check(state [][]byte, past map[string]int, curr int) [][]byte {
 
 	for cycle, idx := range past {
 		if idx == last {
-			return d.parse(cycle)
+			return elements(cycle)
 		}
 	}
 	panic("unreachable")
