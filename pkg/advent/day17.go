@@ -1,11 +1,160 @@
 package advent
 
-type Day17 struct{}
+import (
+	"strconv"
+)
 
-func (Day17) PartOne(string) string {
-	panic("unimplemented")
+type Day17 struct {
+	/* --- Day 17: Clumsy Crucible ---
+	The lava starts flowing rapidly once the Lava Production Facility is
+	operational. As you leave, the reindeer offers you a parachute, allowing
+	you to quickly reach Gear Island.
+
+	As you descend, your bird's-eye view of Gear Island reveals why you had
+	trouble finding anyone on your way up: half of Gear Island is empty, but
+	the half below you is a giant factory city!
+
+	You land near the gradually-filling pool of lava at the base of your new
+	lavafall. Lavaducts will eventually carry the lava throughout the city, but
+	to make use of it immediately, Elves are loading it into large crucibles on
+	wheels.
+
+	The crucibles are top-heavy and pushed by hand. Unfortunately, the
+	crucibles become very difficult to steer at high speeds, and so it can be
+	hard to go in a straight line for very long.
+
+	To get Desert Island the machine parts it needs as soon as possible, you'll
+	need to find the best way to get the crucible from the lava pool to the
+	machine parts factory. To do this, you need to minimize heat loss while
+	choosing a route that doesn't require the crucible to go in a straight line
+	for too long.
+
+	Fortunately, the Elves here have a map (your puzzle input) that uses
+	traffic patterns, ambient temperature, and hundreds of other parameters to
+	calculate exactly how much heat loss can be expected for a crucible
+	entering any particular city block.
+
+	For example:
+
+	2413432311323
+	3215453535623
+	3255245654254
+	3446585845452
+	4546657867536
+	1438598798454
+	4457876987766
+	3637877979653
+	4654967986887
+	4564679986453
+	1224686865563
+	2546548887735
+	4322674655533
+
+	Each city block is marked by a single digit that represents the amount of
+	heat loss if the crucible enters that block. The starting point, the lava
+	pool, is the top-left city block; the destination, the machine parts
+	factory, is the bottom-right city block. (Because you already start in the
+	top-left block, you don't incur that block's heat loss unless you leave
+	that block and then return to it.)
+
+	Because it is difficult to keep the top-heavy crucible going in a straight
+	line for very long, it can move at most three blocks in a single direction
+	before it must turn 90 degrees left or right. The crucible also can't
+	reverse direction; after entering each city block, it may only turn left,
+	continue straight, or turn right.
+
+	One way to minimize heat loss is this path:
+
+	2>>34^>>>1323
+	32v>>>35v5623
+	32552456v>>54
+	3446585845v52
+	4546657867v>6
+	14385987984v4
+	44578769877v6
+	36378779796v>
+	465496798688v
+	456467998645v
+	12246868655<v
+	25465488877v5
+	43226746555v>
+
+	This path never moves more than three consecutive blocks in the same
+	direction and incurs a heat loss of only 102.
+
+	Directing the crucible from the lava pool to the machine parts factory, but
+	not moving more than three consecutive blocks in the same direction, what
+	is the least heat loss it can incur? */
 }
 
-func (Day17) PartTwo(string) string {
-	panic("unimplemented")
+func (d Day17) PartOne(input string) string {
+	heat := d.search(elements(input), 1, 3)
+	return strconv.Itoa(heat)
+}
+
+func (d Day17) PartTwo(input string) string {
+	heat := d.search(elements(input), 4, 10)
+	return strconv.Itoa(heat)
+}
+
+func (Day17) parse(input string) (map[pair]int, pair) {
+	grid, end := map[pair]int{}, pair{0, 0}
+	for i, s := range lines(input) {
+		for j, r := range s {
+			grid[pair{j, i}] = int(r - '0')
+			end = pair{j, i}
+		}
+	}
+	return grid, end
+}
+
+func (d Day17) search(grid [][]byte, min int, max int) int {
+	type HeatState struct {
+		heat int
+		state
+	}
+
+	bounds := pair{len(grid), len(grid[0])}
+	src, dst := pair{0, 0}, pair{bounds.i - 1, bounds.j - 1}
+
+	queue := []HeatState{{0, state{src, E}}, {0, state{src, S}}} // TODO: change this to heap for performance
+	visited := map[state]bool{}
+
+	for len(queue) > 0 {
+		curr := pop(&queue, 0)
+		if curr.pos == dst {
+			return curr.heat
+		}
+
+		if _, ok := visited[curr.state]; ok {
+			continue
+		}
+		visited[curr.state] = true
+
+		// left and right turn
+		directions := []pair{{curr.dir.j, curr.dir.i}, {-curr.dir.j, -curr.dir.i}}
+
+		for _, dir := range directions {
+			for setps := min; setps <= max; setps++ {
+				pos := pair{curr.pos.i + dir.i*setps, curr.pos.j + dir.j*setps}
+				if !inbounds(pos, bounds) {
+					continue
+				}
+
+				heat := d.heatloss(grid, curr.pos, dir, setps)
+				next := HeatState{curr.heat + heat, state{pos, dir}}
+				queue = sortedInsert(queue, next, func(s HeatState) int { return s.heat })
+			}
+		}
+	}
+	return -1
+}
+
+func (Day17) heatloss(grid [][]byte, pos, dir pair, steps int) int {
+	heat := 0
+	for n := 1; n <= steps; n++ {
+		elem := pair{pos.i + dir.i*n, pos.j + dir.j*n}
+		heat += int(grid[elem.i][elem.j] - '0')
+	}
+	return heat
 }

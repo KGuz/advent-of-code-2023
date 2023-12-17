@@ -3,6 +3,7 @@ package advent
 import (
 	"bufio"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -12,6 +13,7 @@ type Number interface {
 }
 
 type pair struct{ i, j int }
+type state struct{ pos, dir pair }
 
 var N = pair{-1, 0}
 var W = pair{0, -1}
@@ -23,9 +25,9 @@ var NE = pair{-1, 1}
 var SW = pair{1, -1}
 var SE = pair{1, 1}
 
-func directions() [8]pair { return [8]pair{NW, N, NE, W, E, SW, S, SE} }
-func orthogonal() [4]pair { return [4]pair{N, W, E, S} }
-func oblique() [4]pair    { return [4]pair{NW, NE, SW, SE} }
+func directions() []pair { return []pair{NW, N, NE, W, E, SW, S, SE} }
+func orthogonal() []pair { return []pair{N, W, E, S} }
+func oblique() []pair    { return []pair{NW, NE, SW, SE} }
 
 func parse(s string) int {
 	n, _ := strconv.Atoi(s)
@@ -179,4 +181,68 @@ func capturesNamed(re *regexp.Regexp, str string) map[string]string {
 		}
 	}
 	return captures
+}
+
+func pop[T any](slice *[]T, index int) T {
+	elem := (*slice)[index]
+	*slice = append((*slice)[:index], (*slice)[index+1:]...)
+	return elem
+}
+
+func make2d[T any](isize int, jsize int, val T) [][]T {
+	slice := make([][]T, isize)
+	for i := 0; i < isize; i++ {
+		slice[i] = make([]T, jsize)
+		for j := 0; j < jsize; j++ {
+			slice[i][j] = val
+		}
+	}
+	return slice
+}
+
+func rotate(dir pair, times int) pair {
+	switch times % 4 {
+	case 1:
+		switch dir {
+		case N:
+			return E
+		case E:
+			return S
+		case S:
+			return W
+		case W:
+			return N
+		}
+	case 2:
+		switch dir {
+		case N:
+			return S
+		case E:
+			return E
+		case S:
+			return N
+		case W:
+			return E
+		}
+	case 3:
+		switch dir {
+		case N:
+			return W
+		case E:
+			return N
+		case S:
+			return E
+		case W:
+			return S
+		}
+	}
+	return dir
+}
+
+func sortedInsert[T any](slice []T, value T, f func(T) int) []T {
+	i := sort.Search(len(slice), func(i int) bool { return f(slice[i]) > f(value) })
+	slice = append(slice, value)
+	copy(slice[i+1:], slice[i:])
+	slice[i] = value
+	return slice
 }
