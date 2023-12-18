@@ -190,7 +190,7 @@ func (d Day16) trace(first state, contraption [][]byte) map[state]bool {
 
 	for len(queue) != 0 {
 		beam := pop(&queue, 0)
-		if visited[beam] {
+		if _, ok := visited[beam]; ok {
 			continue
 		}
 		visited[beam] = true

@@ -199,7 +199,7 @@ func floodFill(src point, f func(point) bool) []point {
 
 	for len(queue) > 0 {
 		curr := pop(&queue, 0)
-		if seen[curr] {
+		if _, ok := seen[curr]; ok {
 			continue
 		}
 		seen[curr] = true

@@ -364,10 +364,10 @@ func (Day10) loopWalls(graph [][]byte, pipes []Pipe) map[point]bool {
 func (Day10) visualize(graph [][]byte, loop map[point]bool, inside map[point]bool) {
 	for i := 0; i < len(graph); i++ {
 		for j := 0; j < len(graph[i]); j++ {
-			if !loop[point{i, j}] {
+			if _, ok := loop[point{i, j}]; ok {
 				fmt.Print(dbg.YELLOW)
 			}
-			if !inside[point{i, j}] {
+			if _, ok := inside[point{i, j}]; ok {
 				fmt.Print(dbg.BLUE)
 			}
 
@@ -385,7 +385,7 @@ func (Day10) visualize(graph [][]byte, loop map[point]bool, inside map[point]boo
 			case '|':
 				fmt.Print("┃ ")
 			case '.':
-				if inside[point{i, j}] {
+				if _, ok := inside[point{i, j}]; ok {
 					fmt.Print("I ")
 				} else {
 					fmt.Print("O ")
