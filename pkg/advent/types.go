@@ -5,11 +5,9 @@ import (
 	"math"
 )
 
-type Number interface {
+type number interface {
 	int | uint | int8 | uint8 | int16 | uint16 | int32 | uint32 | int64 | uint64 | float32 | float64
 }
-
-type state struct{ pos, dir point }
 
 type point struct{ i, j int }
 
@@ -32,6 +30,8 @@ func (p point) cmp(q point) int {
 		return ord
 	}
 }
+
+type state struct{ pos, dir point }
 
 var N = point{-1, 0}
 var W = point{0, -1}

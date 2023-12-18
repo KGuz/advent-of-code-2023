@@ -31,7 +31,7 @@ func elements(s string) [][]byte {
 	return elements
 }
 
-func sum[T Number](slice []T) T {
+func sum[T number](slice []T) T {
 	sum := T(0)
 	for _, val := range slice {
 		sum += val
@@ -39,7 +39,7 @@ func sum[T Number](slice []T) T {
 	return sum
 }
 
-func mul[T Number](slice []T) T {
+func mul[T number](slice []T) T {
 	if len(slice) == 0 {
 		return T(0)
 	}
@@ -59,7 +59,7 @@ func transform[From any, To any](slice []From, f func(From) To) []To {
 	return res
 }
 
-func accumulate[Elem any, Acc Number](slice []Elem, f func(Acc, Elem) Acc) Acc {
+func accumulate[Elem any, Acc number](slice []Elem, f func(Acc, Elem) Acc) Acc {
 	acc := Acc(0)
 	for _, val := range slice {
 		acc = f(acc, val)
@@ -125,7 +125,7 @@ func all[T any](slice []T, f func(T) bool) bool {
 	return true
 }
 
-func abs[T Number](a T) T {
+func abs[T number](a T) T {
 	if a < 0 {
 		return -a
 	}
@@ -164,7 +164,13 @@ func capturesNamed(re *regexp.Regexp, str string) map[string]string {
 
 func pop[T any](slice *[]T, index int) T {
 	elem := (*slice)[index]
-	*slice = append((*slice)[:index], (*slice)[index+1:]...)
+	if index == 0 {
+		*slice = (*slice)[1:]
+	} else if index == len(*slice)-1 {
+		*slice = (*slice)[:len(*slice)-1]
+	} else {
+		*slice = append((*slice)[:index], (*slice)[index+1:]...)
+	}
 	return elem
 }
 

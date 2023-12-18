@@ -1,6 +1,7 @@
 package advent
 
 import (
+	. "aoc/internal/heap"
 	"strconv"
 )
 
@@ -108,20 +109,24 @@ func (Day17) parse(input string) (map[point]int, point) {
 	return grid, end
 }
 
-func (d Day17) search(grid [][]byte, min int, max int) int {
-	type HeatState struct {
-		heat int
-		state
-	}
+type HeatState struct {
+	heat int
+	state
+}
 
+func (self HeatState) Less(other any) bool {
+	return self.heat < other.(HeatState).heat
+}
+
+func (d Day17) search(grid [][]byte, min int, max int) int {
 	bounds := point{len(grid), len(grid[0])}
 	src, dst := point{0, 0}, bounds.sub(point{1, 1})
 
-	queue := []HeatState{{0, state{src, E}}, {0, state{src, S}}} // TODO: change this to heap for performance
+	heap := MakeHeap(HeatState{0, state{src, E}}, HeatState{0, state{src, S}})
 	visited := map[state]bool{}
 
-	for len(queue) > 0 {
-		curr := pop(&queue, 0)
+	for len(heap) > 0 {
+		curr := heap.Pop()
 		if curr.pos == dst {
 			return curr.heat
 		}
@@ -143,7 +148,7 @@ func (d Day17) search(grid [][]byte, min int, max int) int {
 
 				heat := d.heatloss(grid, curr.pos, dir, steps)
 				next := HeatState{curr.heat + heat, state{pos, dir}}
-				queue = sortedInsert(queue, next, func(s HeatState) int { return s.heat })
+				heap.Push(next)
 			}
 		}
 	}
