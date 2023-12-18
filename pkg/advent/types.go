@@ -16,6 +16,8 @@ func (p point) sub(q point) point { return point{p.i - q.i, p.j - q.j} }
 func (p point) mul(s int) point   { return point{p.i * s, p.j * s} }
 func (p point) div(s int) point   { return point{p.i / s, p.j / s} }
 
+func (p point) swap() point { return point{p.j, p.i} }
+
 func (p point) l1dist(q point) int { return abs(p.i-q.i) + abs(p.j-q.j) }
 func (p point) l2dist(q point) float64 {
 	di, dj := float64(p.i-q.i), float64(p.j-q.j)

@@ -195,7 +195,7 @@ func (d Day17) search(grid [][]byte, min int, max int) int {
 		visited[curr.state] = true
 
 		// left and right turn
-		directions := []point{{curr.dir.j, curr.dir.i}, {-curr.dir.j, -curr.dir.i}}
+		directions := []point{curr.dir.swap(), curr.dir.swap().mul(-1)}
 
 		for _, dir := range directions {
 			for steps := min; steps <= max; steps++ {
