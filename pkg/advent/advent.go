@@ -200,49 +200,35 @@ func make2d[T any](isize int, jsize int, val T) [][]T {
 	return slice
 }
 
-func rotate(dir pair, times int) pair {
-	switch times % 4 {
-	case 1:
-		switch dir {
-		case N:
-			return E
-		case E:
-			return S
-		case S:
-			return W
-		case W:
-			return N
-		}
-	case 2:
-		switch dir {
-		case N:
-			return S
-		case E:
-			return E
-		case S:
-			return N
-		case W:
-			return E
-		}
-	case 3:
-		switch dir {
-		case N:
-			return W
-		case E:
-			return N
-		case S:
-			return E
-		case W:
-			return S
-		}
-	}
-	return dir
-}
-
 func sortedInsert[T any](slice []T, value T, f func(T) int) []T {
 	i := sort.Search(len(slice), func(i int) bool { return f(slice[i]) > f(value) })
 	slice = append(slice, value)
 	copy(slice[i+1:], slice[i:])
 	slice[i] = value
 	return slice
+}
+
+func floodFill(src pair, bounds pair, f func(pair) bool) []pair {
+	visited := map[pair]bool{}
+	queue := []pair{{0, 0}}
+
+	for len(queue) > 0 {
+		curr := pop(&queue, 0)
+		if visited[curr] {
+			continue
+		}
+		visited[curr] = true
+
+		for _, dir := range orthogonal() {
+			next := pair{curr.i + dir.i, curr.j + dir.j}
+			if !inbounds(next, bounds) {
+				continue
+			}
+			if !f(next) {
+				continue
+			}
+			queue = append(queue, next)
+		}
+	}
+	return keys(visited)
 }

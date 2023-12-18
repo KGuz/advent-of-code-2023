@@ -1,6 +1,9 @@
 package advent
 
-import "slices"
+import (
+	"math"
+	"slices"
+)
 
 type AStar struct{}
 
@@ -9,10 +12,8 @@ func astar(graph [][]byte, src, dst pair) []pair {
 }
 
 func (AStar) initialize(src pair, size pair) ([][]int, [][]int) {
-	INFINITY := int(^uint(0) >> 1)
-
-	gscore := make2d(size.i, size.j, INFINITY)
-	fscore := make2d(size.i, size.j, INFINITY)
+	gscore := make2d(size.i, size.j, math.MaxInt)
+	fscore := make2d(size.i, size.j, math.MaxInt)
 
 	gscore[src.i][src.j] = 0
 	fscore[src.i][src.j] = 0

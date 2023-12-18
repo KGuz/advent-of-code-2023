@@ -49,6 +49,8 @@ func TestPuzzlesWithExamples(t *testing.T) {
 		{16, 2, "51"},
 		{17, 1, "102"},
 		{17, 2, "94"},
+		{18, 1, ""},
+		{18, 2, ""},
 	})
 }
 
@@ -88,6 +90,8 @@ func TestPuzzlesWithInput(t *testing.T) {
 		{16, 2, "7324"},
 		{17, 1, "859"},
 		{17, 2, "1027"}, // takes ~2min
+		{18, 1, ""},
+		{18, 2, ""},
 	})
 }
 

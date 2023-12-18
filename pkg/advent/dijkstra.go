@@ -1,5 +1,7 @@
 package advent
 
+import "math"
+
 type Dijkstra struct{}
 
 func dijkstra(graph [][]byte, src, dst pair) []pair {
@@ -7,15 +9,13 @@ func dijkstra(graph [][]byte, src, dst pair) []pair {
 }
 
 func (Dijkstra) initialize(src pair, size pair) ([]state, [][]int) {
-	INFINITY := int(^uint(0) >> 1)
-
 	cost := make([][]int, size.i)
 	queue := make([]state, 0, 4*size.i*size.j)
 
 	for i := 0; i < size.i; i++ {
 		cost[i] = make([]int, size.j)
 		for j := 0; j < size.j; j++ {
-			cost[i][j] = INFINITY
+			cost[i][j] = math.MaxInt
 			queue = append(queue, state{pair{i, j}, S})
 			queue = append(queue, state{pair{i, j}, W})
 			queue = append(queue, state{pair{i, j}, E})

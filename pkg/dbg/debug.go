@@ -1,6 +1,8 @@
 package dbg
 
-import "fmt"
+import (
+	"fmt"
+)
 
 const (
 	CYAN      = "\033[96m"
