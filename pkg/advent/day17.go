@@ -97,12 +97,12 @@ func (d Day17) PartTwo(input string) string {
 	return strconv.Itoa(heat)
 }
 
-func (Day17) parse(input string) (map[pair]int, pair) {
-	grid, end := map[pair]int{}, pair{0, 0}
+func (Day17) parse(input string) (map[point]int, point) {
+	grid, end := map[point]int{}, point{0, 0}
 	for i, s := range lines(input) {
 		for j, r := range s {
-			grid[pair{j, i}] = int(r - '0')
-			end = pair{j, i}
+			grid[point{j, i}] = int(r - '0')
+			end = point{j, i}
 		}
 	}
 	return grid, end
@@ -114,8 +114,8 @@ func (d Day17) search(grid [][]byte, min int, max int) int {
 		state
 	}
 
-	bounds := pair{len(grid), len(grid[0])}
-	src, dst := pair{0, 0}, pair{bounds.i - 1, bounds.j - 1}
+	bounds := point{len(grid), len(grid[0])}
+	src, dst := point{0, 0}, point{bounds.i - 1, bounds.j - 1}
 
 	queue := []HeatState{{0, state{src, E}}, {0, state{src, S}}} // TODO: change this to heap for performance
 	visited := map[state]bool{}
@@ -132,11 +132,11 @@ func (d Day17) search(grid [][]byte, min int, max int) int {
 		visited[curr.state] = true
 
 		// left and right turn
-		directions := []pair{{curr.dir.j, curr.dir.i}, {-curr.dir.j, -curr.dir.i}}
+		directions := []point{{curr.dir.j, curr.dir.i}, {-curr.dir.j, -curr.dir.i}}
 
 		for _, dir := range directions {
 			for setps := min; setps <= max; setps++ {
-				pos := pair{curr.pos.i + dir.i*setps, curr.pos.j + dir.j*setps}
+				pos := point{curr.pos.i + dir.i*setps, curr.pos.j + dir.j*setps}
 				if !inbounds(pos, bounds) {
 					continue
 				}
@@ -150,10 +150,10 @@ func (d Day17) search(grid [][]byte, min int, max int) int {
 	return -1
 }
 
-func (Day17) heatloss(grid [][]byte, pos, dir pair, steps int) int {
+func (Day17) heatloss(grid [][]byte, pos, dir point, steps int) int {
 	heat := 0
 	for n := 1; n <= steps; n++ {
-		elem := pair{pos.i + dir.i*n, pos.j + dir.j*n}
+		elem := point{pos.i + dir.i*n, pos.j + dir.j*n}
 		heat += int(grid[elem.i][elem.j] - '0')
 	}
 	return heat

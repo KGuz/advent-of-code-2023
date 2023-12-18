@@ -77,7 +77,7 @@ type Day18 struct {
 }
 
 func (d Day18) PartOne(input string) string {
-	points := d.parse(input, func(line string) (pair, int) {
+	points := d.parse(input, func(line string) (point, int) {
 		fields := strings.Fields(line)
 		direction, length := fields[0], fields[1]
 		return d.toDir(direction[0]), parse(length)
@@ -88,7 +88,7 @@ func (d Day18) PartOne(input string) string {
 }
 
 func (d Day18) PartTwo(input string) string {
-	points := d.parse(input, func(line string) (pair, int) {
+	points := d.parse(input, func(line string) (point, int) {
 		color := strings.Fields(line)[2]
 		color = color[2 : len(color)-1]
 
@@ -101,21 +101,21 @@ func (d Day18) PartTwo(input string) string {
 	return strconv.Itoa(area)
 }
 
-func (d Day18) parse(input string, f func(string) (pair, int)) []pair {
+func (d Day18) parse(input string, f func(string) (point, int)) []point {
 	lines := lines(input)
 
-	points := []pair{{0, 0}}
+	points := []point{{0, 0}}
 	for n := range lines {
 		last := points[len(points)-1]
 		d, l := f(lines[n])
 
-		next := pair{last.i + d.i*l, last.j + d.j*l}
+		next := point{last.i + d.i*l, last.j + d.j*l}
 		points = append(points, next)
 	}
 	return points
 }
 
-func (Day18) toDir(b byte) pair {
+func (Day18) toDir(b byte) point {
 	switch b {
 	case 'R', '0':
 		return E
@@ -126,11 +126,11 @@ func (Day18) toDir(b byte) pair {
 	case 'U', '3':
 		return N
 	}
-	return pair{}
+	return point{}
 }
 
-func shoelaceFormula(set []pair) int {
-	partial := func(a, b pair) int {
+func shoelaceFormula(set []point) int {
+	partial := func(a, b point) int {
 		triangle := a.j*b.i - b.j*a.i
 		return triangle + abs(b.j-a.j) + abs(b.i-a.i)
 	}

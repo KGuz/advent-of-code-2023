@@ -158,15 +158,15 @@ func (d Day11) cosmicExpansion(input string, coefficient int) int {
 	return d.distance(galaxies)
 }
 
-func (Day11) expand(skymap [][]byte, coefficient int) []pair {
-	galaxyMap := make(map[pair]pair)
+func (Day11) expand(skymap [][]byte, coefficient int) []point {
+	galaxyMap := make(map[point]point)
 
 	for i, ei := 0, 0; i < len(skymap); i, ei = i+1, ei+1 {
 		empty := true
 		for j := 0; j < len(skymap[i]); j++ {
 			if skymap[i][j] == '#' {
 				empty = false
-				galaxyMap[pair{i, j}] = pair{ei, j}
+				galaxyMap[point{i, j}] = point{ei, j}
 			}
 		}
 		if empty {
@@ -177,9 +177,9 @@ func (Day11) expand(skymap [][]byte, coefficient int) []pair {
 	for j, ej := 0, 0; j < len(skymap[0]); j, ej = j+1, ej+1 {
 		empty := true
 		for i := 0; i < len(skymap); i++ {
-			if g, ok := galaxyMap[pair{i, j}]; ok {
+			if g, ok := galaxyMap[point{i, j}]; ok {
 				empty = false
-				galaxyMap[pair{i, j}] = pair{g.i, ej}
+				galaxyMap[point{i, j}] = point{g.i, ej}
 			}
 		}
 		if empty {
@@ -190,8 +190,8 @@ func (Day11) expand(skymap [][]byte, coefficient int) []pair {
 	return values(galaxyMap)
 }
 
-func (Day11) distance(galaxies []pair) int {
-	dist := func(a, b pair) int {
+func (Day11) distance(galaxies []point) int {
+	dist := func(a, b point) int {
 		return abs(a.i-b.i) + abs(a.j-b.j)
 	}
 

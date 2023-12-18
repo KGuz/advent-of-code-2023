@@ -187,7 +187,7 @@ func (d Day13) PartTwo(input string) string {
 	return strconv.Itoa(sum)
 }
 
-func (d Day13) parse(input string) ([]map[pair]bool, []pair) {
+func (d Day13) parse(input string) ([]map[point]bool, []point) {
 	lines := lines(input)
 
 	sep := []int{-1}
@@ -198,26 +198,26 @@ func (d Day13) parse(input string) ([]map[pair]bool, []pair) {
 	}
 	sep = append(sep, len(lines))
 
-	maps := make([]map[pair]bool, 0, len(sep))
-	bounds := make([]pair, 0, len(sep))
+	maps := make([]map[point]bool, 0, len(sep))
+	bounds := make([]point, 0, len(sep))
 	for n := 0; n < len(sep)-1; n++ {
 		local := lines[sep[n]+1 : sep[n+1]]
-		mirrors := make(map[pair]bool)
+		mirrors := make(map[point]bool)
 
 		for i := 0; i < len(local); i++ {
 			for j := 0; j < len(local[i]); j++ {
 				if local[i][j] == '#' {
-					mirrors[pair{i, j}] = true
+					mirrors[point{i, j}] = true
 				}
 			}
 		}
 		maps = append(maps, mirrors)
-		bounds = append(bounds, pair{len(local), len(local[0])})
+		bounds = append(bounds, point{len(local), len(local[0])})
 	}
 	return maps, bounds
 }
 
-func symmetry(a, b pair) (float64, float64) {
+func symmetry(a, b point) (float64, float64) {
 	if a.i == b.i { // possible vertical symmetry
 		aj, bj := min(a.j, b.j), max(a.j, b.j)
 		dj := bj - aj
@@ -237,17 +237,17 @@ func symmetry(a, b pair) (float64, float64) {
 	return -1, -1 // reflection should be symmetrical about only one axis
 }
 
-func reflect(p pair, ir, jr float64) pair {
+func reflect(p point, ir, jr float64) point {
 	if ir == 0 {
 		dj := jr - float64(p.j)
-		return pair{p.i, p.j + int(dj*2)}
+		return point{p.i, p.j + int(dj*2)}
 	} else {
 		di := ir - float64(p.i)
-		return pair{p.i + int(di*2), p.j}
+		return point{p.i + int(di*2), p.j}
 	}
 }
 
-func (Day13) pointOfIncidence(mirrors map[pair]bool, bounds pair, smudge bool) (int, int) {
+func (Day13) pointOfIncidence(mirrors map[point]bool, bounds point, smudge bool) (int, int) {
 	type fpair struct{ i, j float64 }
 	points := keys(mirrors)
 

@@ -4,11 +4,11 @@ import "math"
 
 type Dijkstra struct{}
 
-func dijkstra(graph [][]byte, src, dst pair) []pair {
+func dijkstra(graph [][]byte, src, dst point) []point {
 	return Dijkstra{}.run(graph, src, dst)
 }
 
-func (Dijkstra) initialize(src pair, size pair) ([]state, [][]int) {
+func (Dijkstra) initialize(src point, size point) ([]state, [][]int) {
 	cost := make([][]int, size.i)
 	queue := make([]state, 0, 4*size.i*size.j)
 
@@ -16,18 +16,18 @@ func (Dijkstra) initialize(src pair, size pair) ([]state, [][]int) {
 		cost[i] = make([]int, size.j)
 		for j := 0; j < size.j; j++ {
 			cost[i][j] = math.MaxInt
-			queue = append(queue, state{pair{i, j}, S})
-			queue = append(queue, state{pair{i, j}, W})
-			queue = append(queue, state{pair{i, j}, E})
-			queue = append(queue, state{pair{i, j}, N})
+			queue = append(queue, state{point{i, j}, S})
+			queue = append(queue, state{point{i, j}, W})
+			queue = append(queue, state{point{i, j}, E})
+			queue = append(queue, state{point{i, j}, N})
 		}
 	}
 	cost[src.i][src.j] = 0
 	return queue, cost
 }
 
-func (d Dijkstra) run(graph [][]byte, src, dst pair) []pair {
-	bounds := pair{len(graph), len(graph[0])}
+func (d Dijkstra) run(graph [][]byte, src, dst point) []point {
+	bounds := point{len(graph), len(graph[0])}
 	queue, cost := d.initialize(src, bounds)
 
 	history := make(map[state]state)
@@ -38,11 +38,11 @@ func (d Dijkstra) run(graph [][]byte, src, dst pair) []pair {
 
 		path := d.backtrack(history, curr)
 		for _, dir := range orthogonal() {
-			next := state{pair{curr.pos.i + dir.i, curr.pos.j + dir.j}, dir}
+			next := state{point{curr.pos.i + dir.i, curr.pos.j + dir.j}, dir}
 			if !inbounds(next.pos, bounds) {
 				continue
 			}
-			if len(path) > 1 && (path[0].dir == pair{-dir.i, -dir.j}) {
+			if len(path) > 1 && (path[0].dir == point{-dir.i, -dir.j}) {
 				continue // cant reverse direction
 			}
 			if len(path) > 3 && all(path[:3], func(s state) bool { return s.dir == dir }) {
@@ -57,8 +57,8 @@ func (d Dijkstra) run(graph [][]byte, src, dst pair) []pair {
 		}
 	}
 
-	path1 := transform(d.backtrack(history, state{dst, S}), func(s state) pair { return s.pos })
-	path2 := transform(d.backtrack(history, state{dst, W}), func(s state) pair { return s.pos })
+	path1 := transform(d.backtrack(history, state{dst, S}), func(s state) point { return s.pos })
+	path2 := transform(d.backtrack(history, state{dst, W}), func(s state) point { return s.pos })
 	if len(path1) < len(path2) {
 		return path1
 	} else {
@@ -94,14 +94,14 @@ func (Dijkstra) backtrack(history map[state]state, dst state) []state {
 	return path
 }
 
-func (d Dijkstra) directions(pos pair, bounds pair, history map[pair]pair) []pair {
+func (d Dijkstra) directions(pos point, bounds point, history map[point]point) []point {
 	last := d.last3(history, pos)
-	return filter(orthogonal(), func(dir pair) bool {
-		next := pair{pos.i + dir.i, pos.j + dir.j}
+	return filter(orthogonal(), func(dir point) bool {
+		next := point{pos.i + dir.i, pos.j + dir.j}
 		if !inbounds(next, bounds) {
 			return false
 		}
-		if len(last) > 1 && (last[0] == pair{-dir.i, -dir.j}) {
+		if len(last) > 1 && (last[0] == point{-dir.i, -dir.j}) {
 			return false // cant reverse direction
 		}
 		if len(last) > 3 && dir == last[0] && dir == last[1] && dir == last[2] {
@@ -111,15 +111,15 @@ func (d Dijkstra) directions(pos pair, bounds pair, history map[pair]pair) []pai
 	})
 }
 
-func (Dijkstra) last3(history map[pair]pair, curr pair) []pair {
-	path := []pair{curr}
+func (Dijkstra) last3(history map[point]point, curr point) []point {
+	path := []point{curr}
 	n := 0
 	for n < 3 {
 		prev, ok := history[curr]
 		if !ok {
 			break
 		}
-		path = append([]pair{prev}, path...)
+		path = append([]point{prev}, path...)
 		curr = prev
 		n++
 	}

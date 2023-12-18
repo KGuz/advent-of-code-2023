@@ -270,17 +270,17 @@ func (d Day10) PartTwo(input string) string {
 	pipes := d.traverse(graph, si, sj)
 
 	loop := d.loopWalls(graph, pipes)
-	enclosed := make(map[pair]bool)
+	enclosed := make(map[point]bool)
 
 	for i := 0; i < len(graph); i++ {
 		inside := false
 		for j := 0; j < len(graph[i]); j++ {
-			if wall, ok := loop[pair{i, j}]; ok {
+			if wall, ok := loop[point{i, j}]; ok {
 				if wall {
 					inside = !inside
 				}
 			} else if inside {
-				enclosed[pair{i, j}] = true
+				enclosed[point{i, j}] = true
 			}
 		}
 	}
@@ -312,7 +312,7 @@ func (d Day10) traverse(graph [][]byte, i, j int) []Pipe {
 }
 
 func (d Day10) next(graph [][]byte, pipe Pipe) Pipe {
-	for _, dir := range []pair{{0, 1}, {-1, 0}, {1, 0}, {0, -1}} {
+	for _, dir := range []point{{0, 1}, {-1, 0}, {1, 0}, {0, -1}} {
 		ni, nj := pipe.ci+dir.i, pipe.cj+dir.j
 		if (ni == pipe.pi && nj == pipe.pj) || !(0 <= ni && ni < len(graph) && 0 <= nj && nj < len(graph[ni])) {
 			continue
@@ -327,7 +327,7 @@ func (d Day10) next(graph [][]byte, pipe Pipe) Pipe {
 	return pipe // unreachable
 }
 
-func (Day10) pipesConnect(curr byte, next byte, dir pair) bool {
+func (Day10) pipesConnect(curr byte, next byte, dir point) bool {
 	from, to := []byte{}, []byte{}
 	if dir.i == 1 {
 		from = []byte{'|', '7', 'F', 'S'}
@@ -348,26 +348,26 @@ func (Day10) pipesConnect(curr byte, next byte, dir pair) bool {
 	return slices.Contains(from, curr) && slices.Contains(to, next)
 }
 
-func (Day10) loopWalls(graph [][]byte, pipes []Pipe) map[pair]bool {
-	loop := make(map[pair]bool, 0)
+func (Day10) loopWalls(graph [][]byte, pipes []Pipe) map[point]bool {
+	loop := make(map[point]bool, 0)
 	for _, pipe := range pipes {
 		switch graph[pipe.ci][pipe.cj] {
 		case 'F', '7', '|':
-			loop[pair{pipe.ci, pipe.cj}] = true
+			loop[point{pipe.ci, pipe.cj}] = true
 		default:
-			loop[pair{pipe.ci, pipe.cj}] = false
+			loop[point{pipe.ci, pipe.cj}] = false
 		}
 	}
 	return loop
 }
 
-func (Day10) visualize(graph [][]byte, loop map[pair]bool, inside map[pair]bool) {
+func (Day10) visualize(graph [][]byte, loop map[point]bool, inside map[point]bool) {
 	for i := 0; i < len(graph); i++ {
 		for j := 0; j < len(graph[i]); j++ {
-			if !loop[pair{i, j}] {
+			if !loop[point{i, j}] {
 				fmt.Print(dbg.YELLOW)
 			}
-			if !inside[pair{i, j}] {
+			if !inside[point{i, j}] {
 				fmt.Print(dbg.BLUE)
 			}
 
@@ -385,7 +385,7 @@ func (Day10) visualize(graph [][]byte, loop map[pair]bool, inside map[pair]bool)
 			case '|':
 				fmt.Print("┃ ")
 			case '.':
-				if inside[pair{i, j}] {
+				if inside[point{i, j}] {
 					fmt.Print("I ")
 				} else {
 					fmt.Print("O ")

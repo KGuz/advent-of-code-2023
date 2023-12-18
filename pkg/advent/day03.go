@@ -136,23 +136,23 @@ func (d Day03) PartTwo(input string) string {
 	return strconv.Itoa(sum)
 }
 
-func (Day03) symbols(lines []string, f func(rune) bool) []pair {
-	symbols := make([]pair, 0)
+func (Day03) symbols(lines []string, f func(rune) bool) []point {
+	symbols := make([]point, 0)
 	for y, str := range lines {
 		for x, char := range str {
 			if f(char) {
-				symbols = append(symbols, pair{y, x})
+				symbols = append(symbols, point{y, x})
 			}
 		}
 	}
 	return symbols
 }
 
-func (d Day03) adjecent(pos pair, lines []string, numbers map[[3]int]bool) {
-	bounds := pair{len(lines), len(lines[0])}
+func (d Day03) adjecent(pos point, lines []string, numbers map[[3]int]bool) {
+	bounds := point{len(lines), len(lines[0])}
 
 	for _, dir := range directions() {
-		n := pair{pos.i + dir.i, pos.j + dir.j}
+		n := point{pos.i + dir.i, pos.j + dir.j}
 		if inbounds(n, bounds) && isdigit(lines[n.i][n.j]) {
 			s, e := d.expand(lines[n.i], n.j)
 			numbers[[3]int{s, e, n.i}] = true

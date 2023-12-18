@@ -12,22 +12,22 @@ type Number interface {
 	int | uint | int8 | uint8 | int16 | uint16 | int32 | uint32 | int64 | uint64 | float32 | float64
 }
 
-type pair struct{ i, j int }
-type state struct{ pos, dir pair }
+type point struct{ i, j int }
+type state struct{ pos, dir point }
 
-var N = pair{-1, 0}
-var W = pair{0, -1}
-var E = pair{0, 1}
-var S = pair{1, 0}
+var N = point{-1, 0}
+var W = point{0, -1}
+var E = point{0, 1}
+var S = point{1, 0}
 
-var NW = pair{-1, -1}
-var NE = pair{-1, 1}
-var SW = pair{1, -1}
-var SE = pair{1, 1}
+var NW = point{-1, -1}
+var NE = point{-1, 1}
+var SW = point{1, -1}
+var SE = point{1, 1}
 
-func directions() []pair { return []pair{NW, N, NE, W, E, SW, S, SE} }
-func orthogonal() []pair { return []pair{N, W, E, S} }
-func oblique() []pair    { return []pair{NW, NE, SW, SE} }
+func directions() []point { return []point{NW, N, NE, W, E, SW, S, SE} }
+func orthogonal() []point { return []point{N, W, E, S} }
+func oblique() []point    { return []point{NW, NE, SW, SE} }
 
 func parse(s string) int {
 	n, _ := strconv.Atoi(s)
@@ -114,7 +114,7 @@ func values[M ~map[K]V, K comparable, V any](m M) []V {
 	return r
 }
 
-func inbounds(pos, bounds pair) bool {
+func inbounds(pos, bounds point) bool {
 	return 0 <= pos.i && pos.i < bounds.i && 0 <= pos.j && pos.j < bounds.j
 }
 
@@ -208,9 +208,9 @@ func sortedInsert[T any](slice []T, value T, f func(T) int) []T {
 	return slice
 }
 
-func floodFill(src pair, bounds pair, f func(pair) bool) []pair {
-	visited := map[pair]bool{}
-	queue := []pair{{0, 0}}
+func floodFill(src point, bounds point, f func(point) bool) []point {
+	visited := map[point]bool{}
+	queue := []point{{0, 0}}
 
 	for len(queue) > 0 {
 		curr := pop(&queue, 0)
@@ -220,7 +220,7 @@ func floodFill(src pair, bounds pair, f func(pair) bool) []pair {
 		visited[curr] = true
 
 		for _, dir := range orthogonal() {
-			next := pair{curr.i + dir.i, curr.j + dir.j}
+			next := point{curr.i + dir.i, curr.j + dir.j}
 			if !inbounds(next, bounds) {
 				continue
 			}

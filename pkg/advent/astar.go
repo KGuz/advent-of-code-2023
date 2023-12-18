@@ -7,11 +7,11 @@ import (
 
 type AStar struct{}
 
-func astar(graph [][]byte, src, dst pair) []pair {
+func astar(graph [][]byte, src, dst point) []point {
 	return AStar{}.run(graph, src, dst)
 }
 
-func (AStar) initialize(src pair, size pair) ([][]int, [][]int) {
+func (AStar) initialize(src point, size point) ([][]int, [][]int) {
 	gscore := make2d(size.i, size.j, math.MaxInt)
 	fscore := make2d(size.i, size.j, math.MaxInt)
 
@@ -21,8 +21,8 @@ func (AStar) initialize(src pair, size pair) ([][]int, [][]int) {
 	return gscore, fscore
 }
 
-func (astar AStar) run(graph [][]byte, src, dst pair) []pair {
-	bounds := pair{len(graph), len(graph[0])}
+func (astar AStar) run(graph [][]byte, src, dst point) []point {
+	bounds := point{len(graph), len(graph[0])}
 	gscore, fscore := astar.initialize(src, bounds)
 
 	history := map[state]state{}
@@ -35,16 +35,16 @@ func (astar AStar) run(graph [][]byte, src, dst pair) []pair {
 		path := astar.backtrack(history, curr)
 		if curr.pos == dst {
 			slices.Reverse(path)
-			positions := transform(path, func(s state) pair { return s.pos })
+			positions := transform(path, func(s state) point { return s.pos })
 			return positions[1:]
 		}
 
 		for _, dir := range orthogonal() {
-			next := state{pair{curr.pos.i + dir.i, curr.pos.j + dir.j}, dir}
+			next := state{point{curr.pos.i + dir.i, curr.pos.j + dir.j}, dir}
 			if !inbounds(next.pos, bounds) {
 				continue
 			}
-			if (curr.dir == pair{-dir.i, -dir.j}) {
+			if (curr.dir == point{-dir.i, -dir.j}) {
 				continue // cant reverse direction
 			}
 			if len(path) > 3 && all(path[:3], func(s state) bool { return s.dir == dir }) {
@@ -65,7 +65,7 @@ func (astar AStar) run(graph [][]byte, src, dst pair) []pair {
 			}
 		}
 	}
-	return []pair{} // no path was found
+	return []point{} // no path was found
 }
 
 func (AStar) lowestScore(queue []state, scores [][]int) int {

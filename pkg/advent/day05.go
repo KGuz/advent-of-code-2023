@@ -206,11 +206,11 @@ func (d Day05) PartOne(input string) string {
 
 func (d Day05) PartTwo(input string) string {
 	seedNums, maps := d.parse(input)
-	seeds := make([]pair, 0, len(seedNums)/2)
+	seeds := make([]point, 0, len(seedNums)/2)
 
 	for i := 0; i < len(seedNums); i += 2 {
 		start, length := seedNums[i], seedNums[i+1]
-		seeds = append(seeds, pair{start, start + length - 1})
+		seeds = append(seeds, point{start, start + length - 1})
 	}
 
 	for _, ranges := range maps {
@@ -219,17 +219,17 @@ func (d Day05) PartTwo(input string) string {
 		for n, seed := range seeds {
 			for _, rmap := range ranges {
 				rstart, lend := max(seed.i, rmap.src), min(seed.j, rmap.src+rmap.len-1)
-				common := pair{rstart, lend}
+				common := point{rstart, lend}
 
 				if common.i <= common.j {
 					offset := rmap.dst - rmap.src
-					next[n] = pair{common.i + offset, common.j + offset}
+					next[n] = point{common.i + offset, common.j + offset}
 
 					if common.i > seed.i {
-						next = append(next, pair{seed.i, common.i - 1})
+						next = append(next, point{seed.i, common.i - 1})
 					}
 					if common.j < seed.j {
-						next = append(next, pair{common.j + 1, seed.j})
+						next = append(next, point{common.j + 1, seed.j})
 					}
 					break
 				}
@@ -238,7 +238,7 @@ func (d Day05) PartTwo(input string) string {
 		seeds = next
 	}
 
-	min := slices.MinFunc(seeds, func(a, b pair) int {
+	min := slices.MinFunc(seeds, func(a, b point) int {
 		return cmp.Compare(a.i, b.i)
 	})
 
