@@ -312,7 +312,7 @@ func (d Day10) traverse(graph [][]byte, i, j int) []Pipe {
 }
 
 func (d Day10) next(graph [][]byte, pipe Pipe) Pipe {
-	for _, dir := range []point{{0, 1}, {-1, 0}, {1, 0}, {0, -1}} {
+	for _, dir := range orthogonal() {
 		ni, nj := pipe.ci+dir.i, pipe.cj+dir.j
 		if (ni == pipe.pi && nj == pipe.pj) || !(0 <= ni && ni < len(graph) && 0 <= nj && nj < len(graph[ni])) {
 			continue

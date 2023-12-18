@@ -152,7 +152,7 @@ func (d Day03) adjecent(pos point, lines []string, numbers map[[3]int]bool) {
 	bounds := point{len(lines), len(lines[0])}
 
 	for _, dir := range directions() {
-		n := point{pos.i + dir.i, pos.j + dir.j}
+		n := pos.add(dir)
 		if inbounds(n, bounds) && isdigit(lines[n.i][n.j]) {
 			s, e := d.expand(lines[n.i], n.j)
 			numbers[[3]int{s, e, n.i}] = true

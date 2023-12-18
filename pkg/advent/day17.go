@@ -115,7 +115,7 @@ func (d Day17) search(grid [][]byte, min int, max int) int {
 	}
 
 	bounds := point{len(grid), len(grid[0])}
-	src, dst := point{0, 0}, point{bounds.i - 1, bounds.j - 1}
+	src, dst := point{0, 0}, bounds.sub(point{1, 1})
 
 	queue := []HeatState{{0, state{src, E}}, {0, state{src, S}}} // TODO: change this to heap for performance
 	visited := map[state]bool{}
@@ -135,13 +135,13 @@ func (d Day17) search(grid [][]byte, min int, max int) int {
 		directions := []point{{curr.dir.j, curr.dir.i}, {-curr.dir.j, -curr.dir.i}}
 
 		for _, dir := range directions {
-			for setps := min; setps <= max; setps++ {
-				pos := point{curr.pos.i + dir.i*setps, curr.pos.j + dir.j*setps}
+			for steps := min; steps <= max; steps++ {
+				pos := curr.pos.add(dir.mul(steps))
 				if !inbounds(pos, bounds) {
 					continue
 				}
 
-				heat := d.heatloss(grid, curr.pos, dir, setps)
+				heat := d.heatloss(grid, curr.pos, dir, steps)
 				next := HeatState{curr.heat + heat, state{pos, dir}}
 				queue = sortedInsert(queue, next, func(s HeatState) int { return s.heat })
 			}
@@ -153,7 +153,7 @@ func (d Day17) search(grid [][]byte, min int, max int) int {
 func (Day17) heatloss(grid [][]byte, pos, dir point, steps int) int {
 	heat := 0
 	for n := 1; n <= steps; n++ {
-		elem := point{pos.i + dir.i*n, pos.j + dir.j*n}
+		elem := pos.add(dir.mul(n))
 		heat += int(grid[elem.i][elem.j] - '0')
 	}
 	return heat

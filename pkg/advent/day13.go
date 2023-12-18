@@ -262,7 +262,7 @@ func (Day13) pointOfIncidence(mirrors map[point]bool, bounds point, smudge bool)
 			smudge := smudge
 			for _, p := range points {
 				pp := reflect(p, ir, jr)
-				if !(0 <= pp.i && pp.i < bounds.i) || !(0 <= pp.j && pp.j < bounds.j) {
+				if !inbounds(pp, bounds) {
 					continue // p' would be out of bounds
 				}
 

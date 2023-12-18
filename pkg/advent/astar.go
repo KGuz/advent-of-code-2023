@@ -40,11 +40,11 @@ func (astar AStar) run(graph [][]byte, src, dst point) []point {
 		}
 
 		for _, dir := range orthogonal() {
-			next := state{point{curr.pos.i + dir.i, curr.pos.j + dir.j}, dir}
+			next := state{curr.pos.add(dir), dir}
 			if !inbounds(next.pos, bounds) {
 				continue
 			}
-			if (curr.dir == point{-dir.i, -dir.j}) {
+			if curr.dir == dir.mul(-1) {
 				continue // cant reverse direction
 			}
 			if len(path) > 3 && all(path[:3], func(s state) bool { return s.dir == dir }) {

@@ -191,14 +191,10 @@ func (Day11) expand(skymap [][]byte, coefficient int) []point {
 }
 
 func (Day11) distance(galaxies []point) int {
-	dist := func(a, b point) int {
-		return abs(a.i-b.i) + abs(a.j-b.j)
-	}
-
 	sum := 0
 	for i := 0; i < len(galaxies)-1; i++ {
 		for j := i + 1; j < len(galaxies); j++ {
-			sum += dist(galaxies[i], galaxies[j])
+			sum += galaxies[i].l1dist(galaxies[j])
 		}
 	}
 	return sum

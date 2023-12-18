@@ -149,7 +149,7 @@ type Day16 struct {
 func (d Day16) PartOne(input string) string {
 	contraption := elements(input)
 
-	beam := Beam{pos: point{0, -1}, dir: E}
+	beam := state{pos: point{0, -1}, dir: E}
 	energized := d.trace(beam, contraption)
 	tiles := d.tiles(energized)
 
@@ -162,47 +162,40 @@ func (d Day16) PartTwo(input string) string {
 
 	tiles := 0
 	for i := 0; i < bounds.i; i++ {
-		beam := Beam{pos: point{i, -1}, dir: E}
+		beam := state{pos: point{i, -1}, dir: E}
 		energized := d.trace(beam, contraption)
 		tiles = max(tiles, d.tiles(energized))
 
-		beam = Beam{pos: point{i, bounds.j}, dir: W}
+		beam = state{pos: point{i, bounds.j}, dir: W}
 		energized = d.trace(beam, contraption)
 		tiles = max(tiles, d.tiles(energized))
 	}
 	for j := 0; j < bounds.j; j++ {
-		beam := Beam{pos: point{-1, j}, dir: S}
+		beam := state{pos: point{-1, j}, dir: S}
 		energized := d.trace(beam, contraption)
 		tiles = max(tiles, d.tiles(energized))
 
-		beam = Beam{pos: point{bounds.i, j}, dir: N}
+		beam = state{pos: point{bounds.i, j}, dir: N}
 		energized = d.trace(beam, contraption)
 		tiles = max(tiles, d.tiles(energized))
 	}
 	return strconv.Itoa(tiles)
 }
 
-type Beam struct {
-	pos point
-	dir point
-}
-
-func (d Day16) trace(first Beam, contraption [][]byte) map[Beam]bool {
+func (d Day16) trace(first state, contraption [][]byte) map[state]bool {
 	bounds := point{len(contraption), len(contraption[0])}
 
-	visited := make(map[Beam]bool)
-	queue := []Beam{first}
+	visited := make(map[state]bool)
+	queue := []state{first}
 
 	for len(queue) != 0 {
-		beam := queue[0]
-		queue = queue[1:]
-
+		beam := pop(&queue, 0)
 		if visited[beam] {
 			continue
 		}
 		visited[beam] = true
 
-		beam.pos = point{beam.pos.i + beam.dir.i, beam.pos.j + beam.dir.j}
+		beam.pos = beam.pos.add(beam.dir)
 		if inbounds(beam.pos, bounds) {
 			queue = append(queue, d.update(beam, contraption)...)
 		}
@@ -212,38 +205,38 @@ func (d Day16) trace(first Beam, contraption [][]byte) map[Beam]bool {
 	return visited
 }
 
-func (Day16) update(beam Beam, contraption [][]byte) []Beam {
-	beams := make([]Beam, 0, 2)
+func (Day16) update(beam state, contraption [][]byte) []state {
+	beams := make([]state, 0, 2)
 	switch contraption[beam.pos.i][beam.pos.j] {
 	case '.':
 		beams = append(beams, beam)
 	case '/':
 		switch beam.dir {
 		case N:
-			beams = append(beams, Beam{beam.pos, E})
+			beams = append(beams, state{beam.pos, E})
 		case E:
-			beams = append(beams, Beam{beam.pos, N})
+			beams = append(beams, state{beam.pos, N})
 		case W:
-			beams = append(beams, Beam{beam.pos, S})
+			beams = append(beams, state{beam.pos, S})
 		case S:
-			beams = append(beams, Beam{beam.pos, W})
+			beams = append(beams, state{beam.pos, W})
 		}
 	case '\\':
 		switch beam.dir {
 		case N:
-			beams = append(beams, Beam{beam.pos, W})
+			beams = append(beams, state{beam.pos, W})
 		case E:
-			beams = append(beams, Beam{beam.pos, S})
+			beams = append(beams, state{beam.pos, S})
 		case W:
-			beams = append(beams, Beam{beam.pos, N})
+			beams = append(beams, state{beam.pos, N})
 		case S:
-			beams = append(beams, Beam{beam.pos, E})
+			beams = append(beams, state{beam.pos, E})
 		}
 	case '-':
 		switch beam.dir {
 		case N, S:
-			beams = append(beams, Beam{beam.pos, E})
-			beams = append(beams, Beam{beam.pos, W})
+			beams = append(beams, state{beam.pos, E})
+			beams = append(beams, state{beam.pos, W})
 		case E, W:
 			beams = append(beams, beam)
 		}
@@ -252,14 +245,14 @@ func (Day16) update(beam Beam, contraption [][]byte) []Beam {
 		case N, S:
 			beams = append(beams, beam)
 		case E, W:
-			beams = append(beams, Beam{beam.pos, N})
-			beams = append(beams, Beam{beam.pos, S})
+			beams = append(beams, state{beam.pos, N})
+			beams = append(beams, state{beam.pos, S})
 		}
 	}
 	return beams
 }
 
-func (Day16) tiles(energized map[Beam]bool) int {
+func (Day16) tiles(energized map[state]bool) int {
 	tiles := make(map[point]bool, len(energized))
 	for node := range energized {
 		tiles[node.pos] = true

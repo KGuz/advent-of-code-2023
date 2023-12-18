@@ -38,11 +38,11 @@ func (d Dijkstra) run(graph [][]byte, src, dst point) []point {
 
 		path := d.backtrack(history, curr)
 		for _, dir := range orthogonal() {
-			next := state{point{curr.pos.i + dir.i, curr.pos.j + dir.j}, dir}
+			next := state{curr.pos.add(dir), dir}
 			if !inbounds(next.pos, bounds) {
 				continue
 			}
-			if len(path) > 1 && (path[0].dir == point{-dir.i, -dir.j}) {
+			if len(path) > 1 && (path[0].dir == dir.mul(-1)) {
 				continue // cant reverse direction
 			}
 			if len(path) > 3 && all(path[:3], func(s state) bool { return s.dir == dir }) {
@@ -56,14 +56,7 @@ func (d Dijkstra) run(graph [][]byte, src, dst point) []point {
 			}
 		}
 	}
-
-	path1 := transform(d.backtrack(history, state{dst, S}), func(s state) point { return s.pos })
-	path2 := transform(d.backtrack(history, state{dst, W}), func(s state) point { return s.pos })
-	if len(path1) < len(path2) {
-		return path1
-	} else {
-		return path2
-	}
+	return transform(d.backtrack(history, state{dst, W}), func(s state) point { return s.pos })
 }
 
 func (Dijkstra) lowestScore(queue []state, scores [][]int) int {
@@ -92,23 +85,6 @@ func (Dijkstra) backtrack(history map[state]state, dst state) []state {
 		curr = prev
 	}
 	return path
-}
-
-func (d Dijkstra) directions(pos point, bounds point, history map[point]point) []point {
-	last := d.last3(history, pos)
-	return filter(orthogonal(), func(dir point) bool {
-		next := point{pos.i + dir.i, pos.j + dir.j}
-		if !inbounds(next, bounds) {
-			return false
-		}
-		if len(last) > 1 && (last[0] == point{-dir.i, -dir.j}) {
-			return false // cant reverse direction
-		}
-		if len(last) > 3 && dir == last[0] && dir == last[1] && dir == last[2] {
-			return false // cant move 4 times in the same direction
-		}
-		return true
-	})
 }
 
 func (Dijkstra) last3(history map[point]point, curr point) []point {

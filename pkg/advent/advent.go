@@ -2,6 +2,8 @@ package advent
 
 import (
 	"bufio"
+	"cmp"
+	"math"
 	"regexp"
 	"sort"
 	"strconv"
@@ -13,6 +15,27 @@ type Number interface {
 }
 
 type point struct{ i, j int }
+
+func (p point) add(q point) point { return point{p.i + q.i, p.j + q.j} }
+func (p point) sub(q point) point { return point{p.i - q.i, p.j - q.j} }
+func (p point) mul(s int) point   { return point{p.i * s, p.j * s} }
+func (p point) div(s int) point   { return point{p.i / s, p.j / s} }
+
+func (p point) l1dist(q point) int { return abs(p.i-q.i) + abs(p.j-q.j) }
+func (p point) l2dist(q point) float64 {
+	di, dj := float64(p.i-q.i), float64(p.j-q.j)
+	return math.Sqrt(di*di + dj*dj)
+}
+
+func (p point) cmp(q point) int {
+	ord := cmp.Compare(p.i, q.i)
+	if ord == 0 {
+		return cmp.Compare(p.j, q.j)
+	} else {
+		return ord
+	}
+}
+
 type state struct{ pos, dir point }
 
 var N = point{-1, 0}
@@ -220,7 +243,7 @@ func floodFill(src point, bounds point, f func(point) bool) []point {
 		visited[curr] = true
 
 		for _, dir := range orthogonal() {
-			next := point{curr.i + dir.i, curr.j + dir.j}
+			next := curr.add(dir)
 			if !inbounds(next, bounds) {
 				continue
 			}
