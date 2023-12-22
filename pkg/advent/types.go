@@ -48,3 +48,30 @@ var SE = point{1, 1}
 func directions() []point { return []point{NW, N, NE, W, E, SW, S, SE} }
 func orthogonal() []point { return []point{N, W, E, S} }
 func oblique() []point    { return []point{NW, NE, SW, SE} }
+
+type point3 struct{ x, y, z int }
+
+func (p point3) add(q point3) point3 { return point3{p.x + q.x, p.y + q.y, p.z + q.z} }
+func (p point3) sub(q point3) point3 { return point3{p.x - q.x, p.y - q.y, p.z - q.z} }
+func (p point3) mul(s int) point3    { return point3{p.x * s, p.y * s, p.z * s} }
+func (p point3) div(s int) point3    { return point3{p.x / s, p.y / s, p.z / s} }
+
+func (p point3) l1dist(q point3) int { return abs(p.x-q.x) + abs(p.y-q.y) + abs(p.z-q.z) }
+func (p point3) l2dist(q point3) float64 {
+	dx, dy, dz := float64(p.x-q.x), float64(p.y-q.y), float64(p.z-q.z)
+	return math.Sqrt(dx*dx + dy*dy + dz*dz)
+}
+
+func (p point3) cmp(q point3) int {
+	ord := cmp.Compare(p.x, q.x)
+	if ord == 0 {
+		ord = cmp.Compare(p.y, q.y)
+		if ord == 0 {
+			return cmp.Compare(p.z, q.z)
+		} else {
+			return ord
+		}
+	} else {
+		return ord
+	}
+}
