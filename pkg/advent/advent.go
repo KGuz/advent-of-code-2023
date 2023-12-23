@@ -214,3 +214,11 @@ func floodFill(src point, f func(point) bool) []point {
 	}
 	return keys(seen)
 }
+
+func CloneMap[M ~map[K]V, K comparable, V any](m M) map[K]V {
+	copy := make(M)
+	for key, value := range m {
+		copy[key] = value
+	}
+	return copy
+}
