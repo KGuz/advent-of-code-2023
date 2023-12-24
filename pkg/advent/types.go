@@ -50,6 +50,7 @@ func orthogonal() []point { return []point{N, W, E, S} }
 func oblique() []point    { return []point{NW, NE, SW, SE} }
 
 type point3 struct{ x, y, z int }
+type point3f struct{ x, y, z float64 }
 
 func (p point3) add(q point3) point3 { return point3{p.x + q.x, p.y + q.y, p.z + q.z} }
 func (p point3) sub(q point3) point3 { return point3{p.x - q.x, p.y - q.y, p.z - q.z} }
@@ -61,6 +62,11 @@ func (p point3) l2dist(q point3) float64 {
 	dx, dy, dz := float64(p.x-q.x), float64(p.y-q.y), float64(p.z-q.z)
 	return math.Sqrt(dx*dx + dy*dy + dz*dz)
 }
+
+func (p point3f) add(q point3f) point3f { return point3f{p.x + q.x, p.y + q.y, p.z + q.z} }
+func (p point3f) sub(q point3f) point3f { return point3f{p.x - q.x, p.y - q.y, p.z - q.z} }
+func (p point3f) mul(s float64) point3f { return point3f{p.x * s, p.y * s, p.z * s} }
+func (p point3f) div(s float64) point3f { return point3f{p.x / s, p.y / s, p.z / s} }
 
 func (p point3) cmp(q point3) int {
 	ord := cmp.Compare(p.x, q.x)
